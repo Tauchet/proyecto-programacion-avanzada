@@ -63,8 +63,8 @@ public class HorarioTest {
         // Busqueda del horario a modificar
         Horario horario = horarioRepositorio.findById(resultadoCreacion.getId()).orElse(null);
 
-        // Cambiar de que el lunes abre más temprano
-        horario.setHorario("2 - 20; 10 - 20; 10 - 20; 10 - 20; 10 - 20; 10 - 20; NaN");
+        // Cambiar que el dia lunes no se abre
+        horario.setLunes(false);
 
         // Guardamos los datos creados
         Horario resultado = horarioRepositorio.save(horario);
@@ -108,7 +108,14 @@ public class HorarioTest {
 
     private Horario crearHorario(Lugar lugar) {
         Horario horario = new Horario();
-        horario.setHorario("10 - 20; 10 - 20; 10 - 20; 10 - 20; 10 - 20; 10 - 20; NaN");
+        horario.setInicioHoras(10);
+        horario.setFinalHoras(20);
+        horario.setLunes(true);
+        horario.setMartes(true);
+        horario.setMiercoles(true);
+        horario.setJueves(true);
+        horario.setViernes(true);
+        horario.setSabado(true);
         horario.setLugar(lugar);
         return horario;
     }

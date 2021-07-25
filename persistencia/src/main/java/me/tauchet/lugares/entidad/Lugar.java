@@ -38,6 +38,9 @@ public class Lugar implements Serializable {
     @OneToMany(mappedBy="lugar")
     private List<Telefono> telefonos;
 
+    @OneToMany(mappedBy="lugar")
+    private List<Horario> horarios;
+
     private double latitud;
     private double longitud;
 
@@ -46,9 +49,6 @@ public class Lugar implements Serializable {
 
     @ManyToOne
     private Usuario moderador;
-
-    @OneToOne
-    private Horario horario;
 
     @OneToMany(mappedBy="lugar")
     private List<Comentario> comentarios;
