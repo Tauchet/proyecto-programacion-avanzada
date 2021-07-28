@@ -2,11 +2,12 @@ package me.tauchet.lugares.servicios;
 
 import me.tauchet.lugares.entidad.Categoria;
 import me.tauchet.lugares.entidad.Ciudad;
+import me.tauchet.lugares.excepciones.ServicioExcepcion;
 import me.tauchet.lugares.repositorio.CategoriaRepositorio;
-import me.tauchet.lugares.repositorio.CiudadRepositorio;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class CategoriaServicioImpl implements CategoriaServicio {
@@ -25,6 +26,17 @@ public class CategoriaServicioImpl implements CategoriaServicio {
     @Override
     public Categoria crear(Categoria categoria) {
         return this.categoriaRepositorio.save(categoria);
+    }
+
+    @Override
+    public boolean eliminar(int categoriaId) throws ServicioExcepcion {
+        Optional<Categoria> categoriaResultado = this.categoriaRepositorio.findById(categoriaId);
+        if (categoriaResultado.isEmpty()) {
+            throw new ServicioExcepcion("¡La categoria no se ha encontrado!");
+        }
+        this.categoriaRepositorio.deleteById(categoriaId);
+        return true;
+
     }
 
 }

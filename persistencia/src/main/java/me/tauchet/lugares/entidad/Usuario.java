@@ -24,16 +24,17 @@ public class Usuario implements Serializable {
     private String username;
 
     private String password;
+
     private String nombre;
     private String avatarUrl;
 
     @Enumerated(value = EnumType.STRING)
-    private Rol rol;
+    private Rol rol = Rol.USUARIO;
 
     @OneToMany(mappedBy="usuario")
     private List<Lugar> lugares;
 
-    @OneToMany(mappedBy="moderador")
+    @OneToMany(mappedBy="usuario")
     private List<Lugar> lugaresAprobados;
 
     @ManyToOne

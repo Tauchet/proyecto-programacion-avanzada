@@ -1,7 +1,6 @@
 package me.tauchet.lugares.respuestas;
 
 import lombok.Data;
-import lombok.Getter;
 import me.tauchet.lugares.entidad.Categoria;
 import me.tauchet.lugares.entidad.Ciudad;
 
