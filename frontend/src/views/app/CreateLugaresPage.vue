@@ -1,5 +1,8 @@
 <template>
   <div id="app-create-lugares-page">
+
+    
+
     <h3>Crear Lugares {{ form }}</h3>
     <div id="map"></div>
     <form action="#" @submit.prevent="execute">

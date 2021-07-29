@@ -2,6 +2,7 @@ package me.tauchet.lugares.controladores;
 
 import me.tauchet.lugares.entidad.Categoria;
 import me.tauchet.lugares.excepciones.ServicioExcepcion;
+import me.tauchet.lugares.proyeccion.CategoriaBase;
 import me.tauchet.lugares.servicios.CategoriaServicio;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +21,7 @@ public class CategoriaControlador {
     }
 
     @GetMapping("")
-    public ResponseEntity<List<Categoria>> buscarTodas() {
+    public ResponseEntity<List<CategoriaBase>> buscarTodas() {
         return new ResponseEntity<>(this.categoriaServicio.buscarTodas(), HttpStatus.OK);
     }
 

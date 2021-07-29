@@ -10,6 +10,7 @@ import AdminCiudadesPage from '../views/admin/AdminCiudadesPage.vue';
 import AdminCategoriasPage from '../views/admin/AdminCategoriasPage.vue';
 
 // Página de Usuario
+import LugarPage from '../views/app/LugarPage.vue';
 import CreateLugaresPage from '../views/app/CreateLugaresPage.vue';
 
 // Página de Moderador
@@ -38,6 +39,11 @@ const routes = [
     path: '/lugares/crear',
     name: 'CrearLugar',
     component: CreateLugaresPage
+  },
+  {
+    path: '/lugar/:lugarId',
+    name: 'BuscarLugar',
+    component: LugarPage
   },
   {
     path: '/admin/ciudades',

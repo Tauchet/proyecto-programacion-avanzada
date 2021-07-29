@@ -2,6 +2,7 @@ package me.tauchet.lugares.servicios;
 
 import me.tauchet.lugares.entidad.Ciudad;
 import me.tauchet.lugares.excepciones.ServicioExcepcion;
+import me.tauchet.lugares.proyeccion.CiudadBase;
 import me.tauchet.lugares.repositorio.CiudadRepositorio;
 import org.springframework.stereotype.Service;
 
@@ -27,8 +28,8 @@ public class CiudadServicioImpl implements CiudadServicio {
     }
 
     @Override
-    public List<Ciudad> buscarTodas() {
-        return this.ciudadRepositorio.buscarTodasCompletas();
+    public List<CiudadBase> buscarTodas() {
+        return this.ciudadRepositorio.buscarTodasCompletas(CiudadBase.class);
     }
 
     @Override

@@ -3,6 +3,7 @@ package me.tauchet.lugares.servicios;
 import me.tauchet.lugares.entidad.Categoria;
 import me.tauchet.lugares.entidad.Ciudad;
 import me.tauchet.lugares.excepciones.ServicioExcepcion;
+import me.tauchet.lugares.proyeccion.CategoriaBase;
 import me.tauchet.lugares.repositorio.CategoriaRepositorio;
 import org.springframework.stereotype.Service;
 
@@ -19,8 +20,8 @@ public class CategoriaServicioImpl implements CategoriaServicio {
     }
 
     @Override
-    public List<Categoria> buscarTodas() {
-        return this.categoriaRepositorio.findAll();
+    public List<CategoriaBase> buscarTodas() {
+        return this.categoriaRepositorio.buscarTodas();
     }
 
     @Override

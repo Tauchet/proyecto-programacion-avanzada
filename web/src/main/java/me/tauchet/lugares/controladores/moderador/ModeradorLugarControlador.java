@@ -1,6 +1,7 @@
 package me.tauchet.lugares.controladores.moderador;
 
-import me.tauchet.lugares.proyeccion.LugarEsperando;
+import me.tauchet.lugares.excepciones.ServicioExcepcion;
+import me.tauchet.lugares.proyeccion.LugarBase;
 import me.tauchet.lugares.servicios.LugarServicio;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,27 +18,28 @@ public class ModeradorLugarControlador {
     private LugarServicio lugarServicio;
 
     @GetMapping("/{lugarId}")
-    public ResponseEntity<LugarEsperando> buscar(@PathVariable("lugarId") int lugarId) {
-        LugarEsperando lugarEsperando = lugarServicio.buscarLugarPorId(lugarId);
-        return new ResponseEntity<>(lugarEsperando, HttpStatus.OK);
+    public ResponseEntity<LugarBase> buscar(@PathVariable("lugarId") int lugarId) {
+        LugarBase lugarBase = lugarServicio.buscarLugarPorId(lugarId, LugarBase.class);
+        return new ResponseEntity<>(lugarBase, HttpStatus.OK);
     }
 
     @PutMapping("/{lugarId}/aprobar")
-    public ResponseEntity<Boolean> aprobar(@PathVariable("lugarId") int lugarId) {
-        System.out.println("PUT");
-        lugarServicio.aprobarLugar(lugarId);
+    public ResponseEntity<Boolean> aprobar(@PathVariable("lugarId") int lugarId) throws ServicioExcepcion {
+        int usuarioId = 44;
+        lugarServicio.confirmarLugar(lugarId, usuarioId, true);
         return new ResponseEntity<>(true, HttpStatus.OK);
     }
 
     @PutMapping("/{lugarId}/desaprobar")
-    public ResponseEntity<Boolean> desaprobar(@PathVariable("lugarId") int lugarId) {
-        lugarServicio.desaprobarLugar(lugarId);
+    public ResponseEntity<Boolean> desaprobar(@PathVariable("lugarId") int lugarId) throws ServicioExcepcion {
+        int usuarioId = 44;
+        lugarServicio.confirmarLugar(lugarId, usuarioId, false);
         return new ResponseEntity<>(true, HttpStatus.OK);
     }
 
     @GetMapping("")
-    public ResponseEntity<List<LugarEsperando>> buscarLugaresEsperando() {
-        List<LugarEsperando> lugares = lugarServicio.buscarLugaresEsperando();
+    public ResponseEntity<List<LugarBase>> buscarLugaresEsperando() {
+        List<LugarBase> lugares = lugarServicio.buscarLugaresEsperando();
         return new ResponseEntity<>(lugares, HttpStatus.OK);
     }
 

@@ -2,6 +2,7 @@ package me.tauchet.lugares.controladores;
 
 import me.tauchet.lugares.entidad.Ciudad;
 import me.tauchet.lugares.excepciones.ServicioExcepcion;
+import me.tauchet.lugares.proyeccion.CiudadBase;
 import me.tauchet.lugares.servicios.CiudadServicio;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,8 +21,8 @@ public class CiudadControlador {
     }
 
     @GetMapping("")
-    public ResponseEntity<List<Ciudad>> buscarTodas() {
-        List<Ciudad> ciudades = this.ciudadServicio.buscarTodas();
+    public ResponseEntity<List<CiudadBase>> buscarTodas() {
+        List<CiudadBase> ciudades = this.ciudadServicio.buscarTodas();
         return new ResponseEntity<>(ciudades, HttpStatus.OK);
     }
 

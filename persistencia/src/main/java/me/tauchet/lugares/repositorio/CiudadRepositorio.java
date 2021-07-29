@@ -1,6 +1,7 @@
 package me.tauchet.lugares.repositorio;
 
 import me.tauchet.lugares.entidad.Ciudad;
+import me.tauchet.lugares.proyeccion.CiudadBase;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -17,6 +18,6 @@ public interface CiudadRepositorio extends JpaRepository<Ciudad, Integer> {
     List<Ciudad> buscarTodas();
 
     @Query("SELECT c FROM Ciudad c")
-    List<Ciudad> buscarTodasCompletas();
+    <T> List<T> buscarTodasCompletas(Class<T> typeClass);
 
 }

@@ -1,5 +1,6 @@
 package me.tauchet.lugares.repositorio;
 
+import me.tauchet.lugares.dto.LugarUsuarioDTO;
 import me.tauchet.lugares.entidad.LugarEstado;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -20,10 +21,11 @@ public interface LugarRepositorio extends JpaRepository<Lugar, Integer> {
     @Query("SELECT lugar FROM Lugar lugar WHERE lugar.estado = :estado")
     <T> List<T> buscarLugaresPorEstado(@Param("estado") LugarEstado estado, Class<T> typeClass);
 
-    @Transactional
-    @Modifying
-    @Query("UPDATE Lugar lugar SET lugar.estado = :estado WHERE lugar.id = :id")
-    void actualizarEstado(@Param("id") int id, @Param("estado") LugarEstado estado);
+    @Query("SELECT lugar.estado FROM Lugar lugar WHERE lugar.id = :lugarId")
+    LugarEstado buscarEstadoPorId(@Param("lugarId") int lugarId);
+
+    @Query("SELECT new me.tauchet.lugares.dto.LugarUsuarioDTO(lugar, (SELECT count(favorito) FROM Favorito favorito WHERE favorito.lugar = lugar AND favorito.usuario.id = :usuarioId) > 0) FROM Lugar lugar WHERE lugar.id = :lugarId")
+    LugarUsuarioDTO  buscarLugarPorUsuario(@Param("lugarId") int lugarId, @Param("usuarioId") int usuarioId);
 
 }
 
