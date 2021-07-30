@@ -10,5 +10,6 @@ public class LugarSimpleUsuarioDTO<T extends LugarBase> {
 
     private T lugar;
     private boolean favorito;
+    private boolean comentario;
 
 }

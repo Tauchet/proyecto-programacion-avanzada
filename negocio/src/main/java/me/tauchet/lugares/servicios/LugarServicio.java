@@ -3,6 +3,8 @@ package me.tauchet.lugares.servicios;
 import me.tauchet.lugares.builders.ComentarioBuilder;
 import me.tauchet.lugares.builders.LugarBuilder;
 import me.tauchet.lugares.dto.LugarSimpleUsuarioDTO;
+import me.tauchet.lugares.dto.LugarUsuarioDTO;
+import me.tauchet.lugares.dto.MiLugarDTO;
 import me.tauchet.lugares.entidad.Lugar;
 import me.tauchet.lugares.excepciones.ServicioExcepcion;
 import me.tauchet.lugares.proyeccion.ComentarioBase;
@@ -15,7 +17,9 @@ public interface LugarServicio {
     int registrarLugar(LugarBuilder peticion) throws ServicioExcepcion;
 
     List<Lugar> buscarTodos();
+
     List<LugarBase> buscarLugaresEsperando();
+    List<MiLugarDTO> buscarLugaresPorUsuario(int usuarioId);
     <T extends LugarBase> T buscarLugarPorId(int lugarId, Class<T> clase);
 
     void confirmarLugar(int lugarId, int usuarioId, boolean aprobado) throws ServicioExcepcion;

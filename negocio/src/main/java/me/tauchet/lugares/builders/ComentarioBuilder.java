@@ -10,7 +10,6 @@ public class ComentarioBuilder {
 
     private String texto;
     private int calificacion;
-    private String descripcion;
 
     @Setter
     private int usuarioId;

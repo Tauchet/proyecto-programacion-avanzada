@@ -10,5 +10,6 @@ public class LugarUsuarioDTO {
 
     private Lugar lugar;
     private boolean favorito;
+    private boolean comentario;
 
 }

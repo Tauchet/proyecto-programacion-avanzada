@@ -25,14 +25,14 @@ public class ModeradorLugarControlador {
 
     @PutMapping("/{lugarId}/aprobar")
     public ResponseEntity<Boolean> aprobar(@PathVariable("lugarId") int lugarId) throws ServicioExcepcion {
-        int usuarioId = 44;
+        int usuarioId = 1;
         lugarServicio.confirmarLugar(lugarId, usuarioId, true);
         return new ResponseEntity<>(true, HttpStatus.OK);
     }
 
     @PutMapping("/{lugarId}/desaprobar")
     public ResponseEntity<Boolean> desaprobar(@PathVariable("lugarId") int lugarId) throws ServicioExcepcion {
-        int usuarioId = 44;
+        int usuarioId = 1;
         lugarServicio.confirmarLugar(lugarId, usuarioId, false);
         return new ResponseEntity<>(true, HttpStatus.OK);
     }

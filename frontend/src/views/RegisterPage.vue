@@ -1,66 +1,64 @@
 <template>
-    <div class="register-page">
-         <p><strong>Notificación:</strong> {{ result }}</p>
-        <form action="#" @submit.prevent="executeRegister">
-
-            <label for="nombre">Nombre</label>
-            <input type="text" name="nombre" v-model="form.nombre">
-
-            <label for="email">Correo Electronico</label>
-            <input type="email" name="email" v-model="form.email">
-
-            <label for="username">Nombre de Usuario</label>
-            <input type="text" name="username" v-model="form.username">
-
-            <label for="password">Contraseña</label>
-            <input type="password" name="password" v-model="form.password">
-
-            <label for="passwordConfirm">Confirmar Contraseña</label>
-            <input type="password" name="passwordConfirm" v-model="form.passwordConfirm">
-
-            <label for="avatarUrl">Avatar URL</label>
-            <input type="text" name="avatarUrl" v-model="form.avatarUrl">
-
-            <CiudadInput v-model="form.ciudadId"/>
-
-            <button>Reigstrarse</button>
-        </form>
-    </div>
+<AuthPage>
+    <form action="#" class="auth-page__form">
+        <AppFormInput label="Nombre" v-model="form.nombre" />
+        <AppFormInput label="Correo Eletronico" type="email" v-model="form.email" />
+        <AppFormInput label="Nombre de Usuario" v-model="form.username" />
+        <AppFormInput label="Contraseña" type="password" v-model="form.password" />
+        <AppFormInput label="Contraseña de Confirmación" type="password" v-model="form.passwordConfirm" />
+        <AppFormInput label="Avatar URL" v-model="form.avatarUrl" />
+        <AppCiudadInput v-model="form.ciudadId" />
+        <AppAlert v-if="error">
+            <p>{{error}}</p>
+        </AppAlert>
+        <div class="auth-page__options">
+            <AppButton @click="sendForm">Registrarse</AppButton>
+            <p>¿Ya tienes una cuenta? <router-link to="/entrar">Iniciar Sesión</router-link></p>
+        </div>
+    </form>
+</AuthPage>
 </template>
 
 <script>
-import CiudadInput from '../components/form/CiudadInput.vue';
+import AppFormInput from "../components/form/AppFormInput";
+import AppCiudadInput from "../components/form/AppCiudadInput";
+import AppButton from "../components/AppButton";
+import AppAlert from "../components/AppAlert";
+import AuthPage from "./AuthPage";
 export default {
-  components: { CiudadInput },
+    name: "RegisterPage",
+    components: {AuthPage, AppAlert, AppButton, AppCiudadInput, AppFormInput},
     data() {
         return {
-            result: "",
             form: {
-                nombre: "",
-                email: "",
-                username: "",
-                password: "",
-                passwordConfirm: "",
-                avatarUrl: "",
+                nombre: '',
+                email: '',
+                username: '',
+                password: '',
+                passwordConfirm: '',
+                avatarUrl: '',
                 ciudadId: -1
-            }
+            },
+            error: null
         }
     },
     methods: {
-        executeRegister() {
+        sendForm() {
 
-            const request = this.$axios.post("registro", this.form);
+            this.error = null;
+
+            const request = this.$axios.post('registro', this.form);
             request.then(() => {
+                // NOTAS: Redireccionar al registrarse.
+            });
 
-                // Redirigir a login
-                
+            request.catch(({ response }) => {
 
-            }).catch(({ response }) => {
-                
-                // Dependencias mínimas
                 const { data } = response;
-                if (data.status == 1000) {
-                    this.result = data.message;
+
+                // Problemas de validación
+                if (data.status === 1000) {
+                    this.error = data.message;
                 }
 
             });
@@ -69,3 +67,7 @@ export default {
     }
 }
 </script>
+
+<style scoped>
+
+</style>

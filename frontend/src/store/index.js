@@ -6,8 +6,8 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   state: {
     general: {
-      categorias: [],
-      ciudades: []
+      ciudades: [],
+      categorias: []
     }
   },
   mutations: {
@@ -16,15 +16,15 @@ export default new Vuex.Store({
     }
   },
   actions: {
-    load(context, payload) {
+    loadGeneral(context, payload) {
       context.commit('loadGeneral', payload);
     }
   },
   getters: {
-    allCiudades(state) {
+    ciudades(state) {
       return state.general.ciudades;
     },
-    allCategorias(state) {
+    categorias(state) {
       return state.general.categorias;
     }
   },

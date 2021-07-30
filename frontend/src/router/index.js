@@ -1,77 +1,39 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Home from '../views/Home.vue'
+import CreateLugarPage from "../views/CreateLugarPage";
+import RegisterPage from "../views/RegisterPage";
+import LugarPage from "../views/LugarPage";
+import MyLugaresPage from "../views/MyLugaresPage";
+import LoginPage from "../views/LoginPage";
 
-import LoginPage from '../views/LoginPage.vue';
-import RegisterPage from '../views/RegisterPage.vue';
-
-// Página de Administración
-import AdminCiudadesPage from '../views/admin/AdminCiudadesPage.vue';
-import AdminCategoriasPage from '../views/admin/AdminCategoriasPage.vue';
-
-// Página de Usuario
-import LugarPage from '../views/app/LugarPage.vue';
-import CreateLugaresPage from '../views/app/CreateLugaresPage.vue';
-
-// Página de Moderador
-import ModeratorLugarPage from '../views/moderator/ModeratorLugarPage.vue';
-import ModeratorLugaresPage from '../views/moderator/ModeratorLugaresPage.vue';
-
-Vue.use(VueRouter)
+Vue.use(VueRouter);
 
 const routes = [
   {
-    path: '/',
-    name: 'Home',
-    component: Home
-  },
-  {
-    path: '/registro',
-    name: 'Register',
-    component: RegisterPage
-  },
-  {
-    path: '/conectar',
-    name: 'Login',
-    component: LoginPage
+    path: '/mis-lugares',
+    component: MyLugaresPage
   },
   {
     path: '/lugares/crear',
-    name: 'CrearLugar',
-    component: CreateLugaresPage
+    component: CreateLugarPage
   },
   {
-    path: '/lugar/:lugarId',
-    name: 'BuscarLugar',
+    path: '/lugares/:lugarId',
     component: LugarPage
   },
   {
-    path: '/admin/ciudades',
-    name: 'AdminCiudades',
-    component: AdminCiudadesPage
+    path: '/registrarme',
+    component: RegisterPage,
+    meta: {
+      disableHeader: true
+    }
   },
   {
-    path: '/admin/categorias',
-    name: 'AdminCategorias',
-    component: AdminCategoriasPage
-  },
-  {
-    path: '/moderador/lugares',
-    name: 'ModeradorLugares',
-    component: ModeratorLugaresPage
-  },
-  {
-    path: '/moderador/lugares/:lugarId',
-    name: 'ModeratorLugarPage',
-    component: ModeratorLugarPage
-  },
-  {
-    path: '/about',
-    name: 'About',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
+    path: '/entrar',
+    component: LoginPage,
+    meta: {
+      disableHeader: true
+    }
   }
 ]
 

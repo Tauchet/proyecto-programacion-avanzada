@@ -25,6 +25,8 @@ public class Comentario {
     @ManyToOne
     private Lugar lugar;
 
+    // NOTAS: Agregar fecha de la respuesta
+
     @ManyToOne
     private Usuario usuario;
 

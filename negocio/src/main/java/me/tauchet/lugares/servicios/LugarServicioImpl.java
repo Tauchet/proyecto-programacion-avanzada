@@ -5,6 +5,7 @@ import me.tauchet.lugares.builders.ComentarioBuilder;
 import me.tauchet.lugares.builders.LugarBuilder;
 import me.tauchet.lugares.dto.LugarSimpleUsuarioDTO;
 import me.tauchet.lugares.dto.LugarUsuarioDTO;
+import me.tauchet.lugares.dto.MiLugarDTO;
 import me.tauchet.lugares.entidad.*;
 import me.tauchet.lugares.excepciones.ServicioExcepcion;
 import me.tauchet.lugares.proyeccion.ComentarioBase;
@@ -91,6 +92,11 @@ public class LugarServicioImpl implements LugarServicio {
     }
 
     @Override
+    public List<MiLugarDTO> buscarLugaresPorUsuario(int usuarioId) {
+        return lugarRepositorio.buscarLugaresPorUsuario(usuarioId);
+    }
+
+    @Override
     public <T extends LugarBase> T buscarLugarPorId(int lugarId, Class<T> clase) {
         return lugarRepositorio.buscarLugarPorId(lugarId, clase);
     }
@@ -116,6 +122,7 @@ public class LugarServicioImpl implements LugarServicio {
         Lugar lugarResultado = lugar.get();
         lugarResultado.setEstado(aprobado ? LugarEstado.APROBADO : LugarEstado.DESAPROBADO);
         lugarResultado.setModerador(usuario.get());
+        lugarResultado.setFechaAprobacion(new Date());
         lugarRepositorio.save(lugarResultado);
 
     }
@@ -168,7 +175,7 @@ public class LugarServicioImpl implements LugarServicio {
             }
 
             T esperando = projectionFactory.createProjection(clase, resultado.getLugar());
-            return new LugarSimpleUsuarioDTO<>(esperando, resultado.isFavorito());
+            return new LugarSimpleUsuarioDTO<>(esperando, resultado.isFavorito(), resultado.isComentario());
 
         } else {
 
@@ -177,7 +184,7 @@ public class LugarServicioImpl implements LugarServicio {
                 throw new ServicioExcepcion("¡No existe el lugar que deseas buscar!");
             }
 
-            busqueda = new LugarSimpleUsuarioDTO<>(lugar, false);
+            busqueda = new LugarSimpleUsuarioDTO<>(lugar, false, false);
         }
         return busqueda;
     }

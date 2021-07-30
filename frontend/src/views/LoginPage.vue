@@ -1,45 +1,54 @@
 <template>
-    <div class="login-page">
-         <p><strong>Notificación:</strong> {{ result }}</p>
-        <form action="#" @submit.prevent="execute">
-
-            <label for="user">Correo Electronico o Nombre de Usuario</label>
-            <input type="text" name="user" v-model="form.user">
-
-            <label for="password">Contraseña</label>
-            <input type="password" name="password" v-model="form.password">
-
-            <button>Iniciar Sesión</button>
+    <AuthPage>
+        <form action="#" class="auth-page__form">
+            <AppAlert v-if="error">
+                <p>{{error}}</p>
+            </AppAlert>
+            <AppFormInput label="Nombre de Usuario o Correo Electronico" v-model="form.user" />
+            <AppFormInput label="Contraseña" type="password" v-model="form.password" />
+            <div class="auth-page__options">
+                <AppButton type="success" @click="sendForm">Iniciar Sesión</AppButton>
+                <p>¿Has olvido tu contraseña? <router-link to="/entrar-olvidada">Click aquí para recuperarla</router-link></p>
+                <p>¿No tienes una cuenta? <router-link to="/registrarme">Registrarme</router-link></p>
+            </div>
         </form>
-    </div>
+    </AuthPage>
 </template>
 
 <script>
+import AppFormInput from "../components/form/AppFormInput";
+import AppButton from "../components/AppButton";
+import AppAlert from "../components/AppAlert";
+import AuthPage from "./AuthPage";
 export default {
-  components: {  },
+    name: "LoginPage",
+    components: {AuthPage, AppAlert, AppButton, AppFormInput},
     data() {
         return {
-            result: "",
             form: {
-                user: "",
-                password: ""
-            }
+                user: '',
+                password: ''
+            },
+            error: null
         }
     },
     methods: {
-        execute() {
+        sendForm() {
 
-            const request = this.$axios.post("conectar", this.form);
+            this.error = null;
+
+            const request = this.$axios.post('registro', this.form);
             request.then(() => {
+                // NOTAS: Redireccionar al registrarse.
+            });
 
-                this.result = "Si encontramos su usuario.";
+            request.catch(({ response }) => {
 
-            }).catch(({ response }) => {
-                
-                // Dependencias mínimas
                 const { data } = response;
-                if (data.status == 1000) {
-                    this.result = data.message;
+
+                // Problemas de validación
+                if (data.status === 1000) {
+                    this.error = data.message;
                 }
 
             });
@@ -48,3 +57,7 @@ export default {
     }
 }
 </script>
+
+<style scoped>
+
+</style>

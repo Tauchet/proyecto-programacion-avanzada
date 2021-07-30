@@ -24,4 +24,8 @@ public class LugarBuilder {
 
     public LugarBuilder() {}
 
+    public void setUsuarioId(int usuarioId) {
+        this.usuarioId = usuarioId;
+    }
+
 }

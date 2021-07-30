@@ -1,0 +1,58 @@
+<template>
+    <button @click.prevent="emitEvent" class="app-button" :class="[type, {big: big}, {inline: inline}]">
+        <slot/>
+    </button>
+</template>
+
+<script>
+export default {
+    name: "AppButton",
+    props: {
+        big: {
+            type: Boolean,
+            default: false
+        },
+        inline: {
+            type: Boolean,
+            default: false
+        },
+        type: {
+            type: String,
+            default: 'info'
+        }
+    },
+    methods: {
+        emitEvent(event) {
+            this.$emit(event.type, event);
+        }
+    }
+}
+</script>
+
+<style lang="scss" scoped>
+.app-button {
+    background: #1976DB;
+    border: none;
+    color: white;
+    cursor: pointer;
+    font-weight: bold;
+    border-radius: 0.3rem;
+    padding: 0.6rem 1.2rem;
+    text-transform: uppercase;
+}
+.app-button.big {
+    padding: 1rem 1.5rem;
+}
+.app-button.success {
+    background: #59B55D;
+}
+.app-button.danger {
+    background: #E96565;
+}
+.app-button.purple {
+    background: #9B59B6;
+}
+.app-button.inline:not(:last-child) {
+    margin-right: 0.3rem;
+}
+</style>

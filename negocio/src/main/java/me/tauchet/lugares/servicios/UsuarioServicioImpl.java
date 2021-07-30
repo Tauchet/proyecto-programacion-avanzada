@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Date;
 import java.util.Optional;
 
 @Service
@@ -47,6 +48,7 @@ public class UsuarioServicioImpl implements UsuarioServicio {
         }
 
         Usuario usuario = new Usuario();
+        usuario.setFechaCreacion(new Date());
         usuario.setEmail(builder.getEmail());
         usuario.setUsername(builder.getUsername());
         usuario.setNombre(builder.getNombre());
