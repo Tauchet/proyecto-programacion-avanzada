@@ -15,6 +15,8 @@ import AdministratorCiudadesPage from "../views/AdministratorCiudadesPage";
 import AdministratorCategoriasPage from "../views/AdministratorCategoriasPage";
 import HomePage from "../views/HomePage";
 
+import realRoutes from '../routes/routes';
+
 Vue.use(VueRouter);
 
 const routes = [
@@ -97,8 +99,12 @@ const routes = [
         component: HomePage
     },
     {
-        path: '*',
+        path: '/404',
         component: NotFoundPage
+    },
+    {
+        path: '*',
+        redirect: '/404'
     }
 ]
 
@@ -108,9 +114,11 @@ const router = new VueRouter({
     routes
 });
 
+
 router.beforeEach((to, from, next) => {
 
     const requireVisitor = to.matched.some(record => record.meta.requireVisitor);
+
 
     if (requireVisitor && store.state.user !== null) {
         const navigator = routes.navegator[store.state.rol] || routes.navegator.USUARIO;
@@ -120,7 +128,13 @@ router.beforeEach((to, from, next) => {
         if (requireUser && store.state.user === null) {
             next('/entrar');
         } else {
-            next();
+            const rol = to.matched[to.matched.length - 1].meta.rol || "USUARIO";
+            const currentRol = store.state.rol || "USUARIO";
+            if (realRoutes.roles.indexOf(currentRol) >= realRoutes.roles.indexOf(rol)) {
+                next();
+            } else {
+                next('/404');
+            }
         }
     }
 

@@ -7,11 +7,12 @@ import me.tauchet.lugares.dto.LugarSimpleUsuarioDTO;
 import me.tauchet.lugares.dto.LugarUsuarioDTO;
 import me.tauchet.lugares.dto.MiLugarDTO;
 import me.tauchet.lugares.entidad.*;
+import me.tauchet.lugares.excepciones.ControladaExcepcion;
+import me.tauchet.lugares.excepciones.ParametrosExcepcion;
 import me.tauchet.lugares.excepciones.ServicioExcepcion;
-import me.tauchet.lugares.proyeccion.ComentarioBase;
-import me.tauchet.lugares.proyeccion.FavoritoSimple;
-import me.tauchet.lugares.proyeccion.LugarBase;
+import me.tauchet.lugares.proyeccion.*;
 import me.tauchet.lugares.repositorio.*;
+import me.tauchet.lugares.utils.ValidacionUtil;
 import org.springframework.data.projection.ProjectionFactory;
 import org.springframework.stereotype.Service;
 
@@ -35,43 +36,76 @@ public class LugarServicioImpl implements LugarServicio {
     private final ProjectionFactory projectionFactory;
 
     @Override
-    public int registrarLugar(LugarBuilder peticion) throws ServicioExcepcion {
+    public int registrarLugar(LugarBuilder builder) throws ServicioExcepcion, ParametrosExcepcion {
 
-        Optional<Ciudad> ciudad = this.ciudadRepositorio.findById(peticion.getCiudadId());
+        ValidacionUtil.estaVacio("nombre", builder.getNombre());
+        ValidacionUtil.estaVacio("descripcion", builder.getDescripcion());
+        ValidacionUtil.estaVacio("categoriaId", builder.getCategoriaId());
+        ValidacionUtil.estaVacio("ciudadId", builder.getCiudadId());
+        ValidacionUtil.estaVacio("usuarioId", builder.getUsuarioId());
+        ValidacionUtil.estaVacio("latitud", builder.getLatitud());
+        ValidacionUtil.estaVacio("longitud", builder.getLongitud());
+
+        ValidacionUtil.esNecesarioEnLista("telefonos", builder.getTelefonos(), 1, "telefono");
+        ValidacionUtil.esNecesarioEnLista("horarios", builder.getHorarios(), 1, "horario");
+        for (Horario horario: builder.getHorarios()) {
+
+            if (horario == null) {
+                throw new ParametrosExcepcion("horarios", "¡No se pueden agregar horarios vacíos!");
+            } else if (!(horario.isLunes() || horario.isMartes() || horario.isMiercoles() || horario.isJueves() || horario.isViernes() || horario.isSabado() || horario.isDomingo())) {
+                throw new ParametrosExcepcion("horarios", "¡Hay un horario sin selección de dias!");
+            } else if (horario.getInicioHoras() == horario.getFinalHoras() && horario.getInicioMinutos() == horario.getFinalMinutos()) {
+                throw new ParametrosExcepcion("horarios", "¡Hay un horario sin tiempos seleccionados!");
+            } else if (horario.getInicioHoras() < 0 || horario.getInicioHoras() > 24 ||
+                    horario.getFinalHoras() < 0 || horario.getFinalHoras() > 24 ||
+                    horario.getInicioMinutos() < 0 || horario.getInicioMinutos() > 59 ||
+                    horario.getFinalMinutos() < 0 || horario.getFinalMinutos() > 59) {
+                throw new ParametrosExcepcion("horarios", "¡Hay un horario con tiempos fuera de lugar!");
+            }
+
+            // Reformandos horas.
+            int tempA = Math.min(horario.getInicioHoras(), horario.getFinalHoras());
+            int tempB = Math.max(horario.getInicioHoras(), horario.getFinalHoras());
+            horario.setInicioHoras(tempA);
+            horario.setFinalHoras(tempB);
+
+        }
+
+        Optional<Ciudad> ciudad = this.ciudadRepositorio.findById(builder.getCiudadId());
         if (ciudad.isEmpty()) {
             throw new ServicioExcepcion("¡No se ha encontrado la ciudad seleccionada!");
         }
 
-        Optional<Categoria> categoria = this.categoriaRepositorio.findById(peticion.getCategoriaId());
+        Optional<Categoria> categoria = this.categoriaRepositorio.findById(builder.getCategoriaId());
         if (categoria.isEmpty()) {
             throw new ServicioExcepcion("¡No se ha encontrado la categoria seleccionada!");
         }
 
-        Optional<Usuario> usuario = this.usuarioRepositorio.findById(peticion.getUsuarioId());
+        Optional<Usuario> usuario = this.usuarioRepositorio.findById(builder.getUsuarioId());
         if (usuario.isEmpty()) {
             throw new ServicioExcepcion("¡No se ha encontrado el usuario registrado!");
         }
 
         Lugar lugar = new Lugar();
         lugar.setFechaCreacion(new Date());
-        lugar.setNombre(peticion.getNombre());
-        lugar.setDescripcion(peticion.getDescripcion());
+        lugar.setNombre(builder.getNombre());
+        lugar.setDescripcion(builder.getDescripcion());
         lugar.setCategoria(categoria.get());
         lugar.setUsuario(usuario.get());
         lugar.setCiudad(ciudad.get());
-        lugar.setLongitud(peticion.getLongitud());
-        lugar.setLatitud(peticion.getLatitud());
+        lugar.setLongitud(builder.getLongitud());
+        lugar.setLatitud(builder.getLatitud());
         lugar.setEstado(LugarEstado.ESPERANDO);
         lugarRepositorio.save(lugar);
 
         // Guardar horarios
-        for (Horario horario: peticion.getHorarios()) {
+        for (Horario horario: builder.getHorarios()) {
             horario.setLugar(lugar);
             horarioRepositorio.save(horario);
         }
 
         // Guardar telefonos
-        for (long numero: peticion.getTelefonos()) {
+        for (long numero: builder.getTelefonos()) {
             Telefono telefono = new Telefono();
             telefono.setNumero(numero);
             telefono.setLugar(lugar);
@@ -82,13 +116,25 @@ public class LugarServicioImpl implements LugarServicio {
     }
 
     @Override
-    public List<Lugar> buscarTodos() {
-        return lugarRepositorio.findAll();
+    public List<LugarBase> buscarTodos(int categoriaId, String texto) {
+        if (categoriaId >= 0 && texto != null && texto.length() > 1) {
+            return lugarRepositorio.buscarTodosPorCategoriaYNombre(categoriaId, texto, LugarBase.class);
+        } else if (categoriaId >= 0) {
+            return lugarRepositorio.buscarTodosPorCategoria(categoriaId, LugarBase.class);
+        } else if (texto != null && texto.length() > 1) {
+            return lugarRepositorio.buscarTodosPorNombre(texto, LugarBase.class);
+        }
+        return lugarRepositorio.buscarTodos(LugarBase.class);
     }
 
     @Override
-    public List<LugarBase> buscarLugaresEsperando() {
-        return lugarRepositorio.buscarLugaresPorEstado(LugarEstado.ESPERANDO, LugarBase.class);
+    public List<LugarConUsuario> buscarLugaresEsperandoORechazados(int usuarioId) {
+        return lugarRepositorio.buscarLugaresEsperandoORechazados(usuarioId, LugarConUsuario.class);
+    }
+
+    @Override
+    public List<LugarRegistro> buscarLugarRegistros(int usuarioId) {
+        return lugarRepositorio.buscarLugarRegistros();
     }
 
     @Override
@@ -102,7 +148,11 @@ public class LugarServicioImpl implements LugarServicio {
     }
 
     @Override
-    public void confirmarLugar(int lugarId, int usuarioId, boolean aprobado) throws ServicioExcepcion {
+    public void confirmarLugar(Integer lugarId, Integer usuarioId, Boolean aprobado) throws ServicioExcepcion, ParametrosExcepcion {
+
+        ValidacionUtil.estaVacio("lugarId", lugarId);
+        ValidacionUtil.estaVacio("usuarioId", usuarioId);
+        ValidacionUtil.estaVacio("aprobado", aprobado);
 
         LugarEstado estado = lugarRepositorio.buscarEstadoPorId(lugarId);
         if (estado != LugarEstado.ESPERANDO) {
@@ -128,7 +178,10 @@ public class LugarServicioImpl implements LugarServicio {
     }
 
     @Override
-    public void registrarFavorito(int usuarioId, int lugarId) throws ServicioExcepcion {
+    public void registrarFavorito(Integer usuarioId, Integer lugarId) throws ServicioExcepcion, ParametrosExcepcion {
+
+        ValidacionUtil.estaVacio("lugarId", lugarId);
+        ValidacionUtil.estaVacio("usuarioId", usuarioId);
 
         Optional<FavoritoSimple> validacion = favoritoRepositorio.buscarFavorito(usuarioId, lugarId, FavoritoSimple.class);
         if (validacion.isPresent()) {
@@ -152,7 +205,10 @@ public class LugarServicioImpl implements LugarServicio {
     }
 
     @Override
-    public void eliminarFavorito(int usuarioId, int lugarId) throws ServicioExcepcion {
+    public void eliminarFavorito(Integer usuarioId, Integer lugarId) throws ServicioExcepcion, ParametrosExcepcion {
+
+        ValidacionUtil.estaVacio("lugarId", lugarId);
+        ValidacionUtil.estaVacio("usuarioId", usuarioId);
 
         Optional<FavoritoSimple> validacion = favoritoRepositorio.buscarFavorito(usuarioId, lugarId, FavoritoSimple.class);
         if (validacion.isEmpty()) {
@@ -164,14 +220,33 @@ public class LugarServicioImpl implements LugarServicio {
     }
 
     @Override
-    public <T extends LugarBase> LugarSimpleUsuarioDTO<T> buscarLugarPorUsuario(int lugarId, int usuarioId, Class<T> clase) throws ServicioExcepcion {
+    public <T extends LugarConUsuario> LugarSimpleUsuarioDTO<T> buscarLugarSegunUsuario(
+            int lugarId,
+            int usuarioId,
+            Class<T> clase
+    ) throws ServicioExcepcion, ControladaExcepcion {
+
         LugarSimpleUsuarioDTO<T> busqueda = null;
+
+
+        Rol usuarioRol = usuarioRepositorio.buscarRolPorUsuarioId(usuarioId);
+
+        // El jugador se encuentra conectado
         if (usuarioId >= 0) {
 
-            LugarUsuarioDTO resultado = lugarRepositorio.buscarLugarPorUsuario(lugarId, usuarioId);
+            LugarUsuarioDTO resultado = lugarRepositorio.buscarLugarSegunUsuario(lugarId, usuarioId);
 
-            if (resultado.getLugar() == null) {
-                throw new ServicioExcepcion("¡No existe el lugar que deseas buscar!");
+            if (resultado == null || resultado.getLugar() == null) {
+                throw new ControladaExcepcion("¡No existe el lugar que deseas buscar!");
+            }
+
+            // NOTAS: Validar que no sea un lugar de el, para que así los moderadores no puedan poner uno.
+            if (usuarioRol == Rol.USUARIO && resultado.getLugar().getEstado() == LugarEstado.ESPERANDO) {
+                throw new ControladaExcepcion("¡Este lugar se encuentra procesandose!");
+            } else if (resultado.getLugar().getEstado() == LugarEstado.DESAPROBADO && usuarioRol != Rol.USUARIO) {
+                if (usuarioId != resultado.getLugar().getUsuario().getId()) {
+                    throw new ControladaExcepcion("¡No existe el lugar que deseas buscar!");
+                }
             }
 
             T esperando = projectionFactory.createProjection(clase, resultado.getLugar());
@@ -181,7 +256,15 @@ public class LugarServicioImpl implements LugarServicio {
 
             T lugar = buscarLugarPorId(lugarId, clase);
             if (lugar == null) {
-                throw new ServicioExcepcion("¡No existe el lugar que deseas buscar!");
+                throw new ControladaExcepcion("¡No existe el lugar que deseas buscar!");
+            }
+
+            if (usuarioRol == Rol.USUARIO && lugar.getEstado() == LugarEstado.ESPERANDO) {
+                throw new ControladaExcepcion("¡Este lugar se encuentra procesandose!");
+            } else if (lugar.getEstado() == LugarEstado.DESAPROBADO && usuarioRol != Rol.USUARIO) {
+                if (usuarioId != lugar.getUsuario().getId()) {
+                    throw new ControladaExcepcion("¡No existe el lugar que deseas buscar!");
+                }
             }
 
             busqueda = new LugarSimpleUsuarioDTO<>(lugar, false, false);
@@ -190,7 +273,12 @@ public class LugarServicioImpl implements LugarServicio {
     }
 
     @Override
-    public ComentarioBase registrarComentario(ComentarioBuilder builder) throws ServicioExcepcion {
+    public ComentarioBase registrarComentario(ComentarioBuilder builder) throws ServicioExcepcion, ParametrosExcepcion {
+
+        ValidacionUtil.estaVacio("calificacion", builder.getCalificacion());
+        ValidacionUtil.estaVacio("texto", builder.getTexto());
+        ValidacionUtil.estaVacio("lugarId", builder.getLugarId());
+        ValidacionUtil.estaVacio("usuarioId", builder.getUsuarioId());
 
         Optional<ComentarioBase> anteriorComentario = comentarioRepositorio.buscarPorLugarYUsuario(builder.getLugarId(), builder.getUsuarioId());
         if (anteriorComentario.isPresent()) {
@@ -219,7 +307,11 @@ public class LugarServicioImpl implements LugarServicio {
     }
 
     @Override
-    public void responderComentario(int usuarioId, int comentarioId, String respuesta) throws ServicioExcepcion {
+    public void responderComentario(Integer usuarioId, Integer comentarioId, String respuesta) throws ServicioExcepcion, ParametrosExcepcion {
+
+        ValidacionUtil.estaVacio("usuarioId", usuarioId);
+        ValidacionUtil.estaVacio("comentarioId", comentarioId);
+        ValidacionUtil.estaVacio("respuesta", respuesta);
 
         Optional<Comentario> comentario = comentarioRepositorio.findById(comentarioId);
         if (comentario.isEmpty()) {

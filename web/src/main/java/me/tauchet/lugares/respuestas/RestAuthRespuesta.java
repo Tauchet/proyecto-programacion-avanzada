@@ -1,22 +1,14 @@
 package me.tauchet.lugares.respuestas;
 
 import lombok.Getter;
+import me.tauchet.lugares.handlers.RestExcepcionHandler;
 
 import java.time.LocalDateTime;
 
-@Getter
-public class RestErrorRespuesta {
+public class RestAuthRespuesta extends RestErrorRespuesta {
 
-    private final LocalDateTime timestamp;
-    private final int status;
-    private final String error;
-    private final String message;
-
-    public RestErrorRespuesta(String mensaje) {
-        this.timestamp = LocalDateTime.now();
-        this.status = 1000;
-        this.error = "Service Error";
-        this.message = mensaje;
+    public RestAuthRespuesta(String mensaje) {
+        super(mensaje, 1500, "Excepcion de Autentificación");
     }
 
 }

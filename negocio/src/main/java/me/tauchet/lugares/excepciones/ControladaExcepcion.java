@@ -1,8 +1,8 @@
 package me.tauchet.lugares.excepciones;
 
-public class AlertaExcepcion extends Exception {
+public class ControladaExcepcion extends Exception {
 
-    public AlertaExcepcion(String mensaje) {
+    public ControladaExcepcion(String mensaje) {
         super(mensaje);
     }
 

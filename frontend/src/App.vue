@@ -1,35 +1,36 @@
 <template>
-  <div id="app">
-    <header v-if="isHeader">
-        <div class="container">
-            <div class="header-logo">
-                <h1><i class="fas fa-map"></i> Lugares</h1>
-                <p>{{ currentRol }}</p>
+    <div id="app">
+        <header v-if="isHeader">
+            <div class="container">
+                <div class="header-logo">
+                    <h1><i class="fas fa-map"></i> Lugares</h1>
+                </div>
+                <div class="header-nav">
+                    <nav v-if="isLogged">
+                        <ul>
+                            <li class="header-nav__item" v-for="item in getNavegator"
+                                :class="{active: item.path === currentPath}" :key="item.path">
+                                <router-link :to="item.path">{{ item.title }}</router-link>
+                            </li>
+
+                        </ul>
+                    </nav>
+                </div>
+                <div class="header-options">
+                    <template v-if="isLogged">
+                        <AppButton @click="logout">Cerrar Sesión</AppButton>
+                        <div class="header-views" v-if="getRolNavegator.length > 0">
+                            <router-link class="header-view__vista" v-for="item in getRolNavegator" :key="item" :to="getRolHomePage(item)">{{ item }}</router-link>
+                        </div>
+                    </template>
+                    <template v-else>
+                        <AppButton type="success" redirect="/entrar">Iniciar Sesión</AppButton>
+                    </template>
+                </div>
             </div>
-            <div class="header-nav">
-                <nav v-if="isLogged">
-                    <ul>
-                        <li class="header-nav__item" v-for="item in getNavegator" :class="{active: item.path === currentPath}" :key="item.path">
-                            <router-link :to="item.path">{{ item.title }}</router-link>
-                        </li>
-                        <li class="header-nav__item" v-for="item in getRolNavegator" :key="item">
-                            <router-link :to="getRolHomePage(item)">VISTA DE {{ item }}</router-link>
-                        </li>
-                    </ul>
-                </nav>
-            </div>
-            <div class="header-options">
-                <template v-if="isLogged">
-                    <AppButton @click="logout">Cerrar Sesión</AppButton>
-                </template>
-                <template v-else>
-                    <AppButton type="success" redirect="/entrar">Iniciar Sesión</AppButton>
-                </template>
-            </div>
-        </div>
-    </header>
-      <router-view/>
-  </div>
+        </header>
+        <router-view/>
+    </div>
 </template>
 
 <script>
@@ -42,7 +43,7 @@ export default {
     methods: {
 
         async loadGeneral() {
-            const { data } = await this.$axios.get('general');
+            const {data} = await this.$axios.get('general');
             this.$store.commit('loadGeneral', data);
         },
 
@@ -108,6 +109,28 @@ export default {
     flex-direction: column;
 }
 
+.header-view__vista {
+    text-decoration: none;
+    color: #ccc;
+    transition: 0.4s;
+}
+
+.header-view__vista:not(:last-child) {
+    padding-right: 0.5rem;
+    border-right: 2px solid #ccc;
+}
+
+.header-view__vista:hover {
+    transform: scale(0.95);
+    color: white;
+}
+
+.header-views {
+    margin-top: 0.5rem;
+    display: flex;
+    gap: 0.5rem;
+}
+
 .lugar-popup {
     min-width: 150px;
     max-width: 150px;
@@ -153,7 +176,7 @@ header {
     .container {
         display: flex;
         align-items: center;
-        padding: 2rem 0;
+
     }
 
     nav ul {
@@ -234,6 +257,7 @@ header {
     color: #ff5252;
     font-weight: bold;
 }
+
 .app-form-input__error p {
     margin: 0;
     font-size: 15px;

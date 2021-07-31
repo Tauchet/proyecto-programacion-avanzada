@@ -6,7 +6,7 @@
         <p class="app-form-selector__icon"><span><i class="fas fa-chevron-down"></i></span></p>
     </button>
     <div class="app-form-input__error" v-if="error">
-        <p><i class="fab fa-fort-awesome-alt"></i> {{ error }}</p>
+        <p class="app-form-input__error-text"><i class="fab fa-fort-awesome-alt"></i> {{ error }}</p>
     </div>
     <transition name="slide">
         <div class="app-form-selector__list" v-if="focus">
@@ -159,10 +159,10 @@ export default {
     background: #efefef;
 }
 
-.app-form-selector.placeholder p {
+.app-form-selector.placeholder p:not(.app-form-input__error-text) {
     color: #777;
 }
-.app-form-selector.focus p {
+.app-form-selector.focus p:not(.app-form-input__error-text) {
     color: #1976DB;
 }
 .app-form-selector__option {

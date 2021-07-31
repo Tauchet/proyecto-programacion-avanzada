@@ -4,7 +4,7 @@
         <AppAlert v-if="error">
             <p>{{error}}</p>
         </AppAlert>
-        <AppFormInput v-model="form.nombre" :label="'Nombre de ' + title" />
+        <AppFormInput :errors="errors" name="nombre" v-model="form.nombre" :label="'Nombre de ' + title" />
         <div class="box-center">
             <AppButton @click="sendForm">Agregar {{title}}</AppButton>
         </div>
@@ -24,6 +24,7 @@ import AppFormInput from "../components/form/AppFormInput";
 import AppButton from "../components/AppButton";
 import AppAlert from "../components/AppAlert";
 import AppCard from "../components/AppCard";
+import ValidationUtil from "../libs/ValidationUtil";
 export default {
     name: "AdministratorListPage",
     components: {AppCard, AppAlert, AppButton, AppFormInput},
@@ -37,6 +38,7 @@ export default {
             form: {
                 nombre: ""
             },
+            errors: {},
             error: null
         }
     },
@@ -49,7 +51,17 @@ export default {
             this.list = data;
         },
         sendForm() {
+
             this.error = null;
+
+            // Validaciones previas --- inicio
+            this.errors = {};
+            ValidationUtil.validateIfNotEmpty(this.errors, this.form, 'nombre');
+            if (Object.keys(this.errors).length > 0) {
+                return;
+            }
+            // Validaciones previas --- final
+
             const request = this.$axios.post('administrador/' + this.urlMethod, this.form);
             request.then(({ data }) => {
                 this.list.push(data);
@@ -59,7 +71,7 @@ export default {
                 const { data } = response;
 
                 // Problemas de validación
-                if (data.status === 1000) {
+                if (data.status === 2000) {
                     this.error = data.message;
                 }
 

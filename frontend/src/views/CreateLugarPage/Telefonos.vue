@@ -1,7 +1,7 @@
 <template>
     <div class="telefonos">
         <div class="telefonos__header">
-            <AppFormInput v-model.number="form" type="number" label="NÚMERO DE TELEFONO" />
+            <AppFormInput @enter="add" :errors="errors" name="texto" v-model.number="form.texto" type="number" label="NÚMERO DE TELEFONO" />
             <div class="box-center">
                 <AppButton @click="add">AGREGAR</AppButton>
             </div>
@@ -21,6 +21,7 @@
 import AppButton from "../../components/AppButton";
 import AppFormInput from "../../components/form/AppFormInput";
 import AppCard from "../../components/AppCard";
+import ValidationUtil from "../../libs/ValidationUtil";
 
 export default {
     name: "Telefonos",
@@ -35,17 +36,31 @@ export default {
     },
     data() {
         return {
-            form: 0
+            form: {
+                texto: ''
+            },
+            errors: {}
         }
     },
     methods: {
         add() {
-            if (!this.value.includes(this.form)) {
+
+            // Validaciones previas --- inicio
+            this.errors = {};
+            ValidationUtil.validateIfNotEmpty(this.errors, this.form, 'texto');
+            ValidationUtil.validateIfDigits(this.errors, this.form, 'texto', 7, 10);
+            if (Object.keys(this.errors).length > 0) {
+                return;
+            }
+            // Validaciones previas --- final
+
+            if (!this.value.includes(this.form.texto)) {
                 const list = [...this.value];
-                list.push(this.form);
-                this.form = "";
+                list.push(this.form.texto);
+                this.form.texto = "";
                 this.$emit("input", list);
             }
+
         },
         remove(index) {
             const newArray = [...this.value];

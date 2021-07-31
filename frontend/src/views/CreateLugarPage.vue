@@ -8,29 +8,25 @@
                         <AppTitle>Información General</AppTitle>
                     </div>
                     <div class="form-section__content">
-                        <AppFormInput v-model="form.nombre" label="Nombre" />
-                        <AppFormInput v-model="form.descripcion" extra-type="textarea" label="Descripción" />
+                        <AppFormInput :errors="errors" name="nombre" v-model="form.nombre" label="Nombre" />
+                        <AppFormInput :errors="errors" name="descripcion" v-model="form.descripcion" extra-type="textarea" label="Descripción" />
                         <AppMultipleLine columns="2">
-                            <AppCiudadInput v-model="form.ciudadId"/>
-                            <AppCategoriaInput v-model="form.categoriaId"/>
+                            <AppCiudadInput :errors="errors" name="ciudadId" v-model="form.ciudadId"/>
+                            <AppCategoriaInput :errors="errors" name="categoriaId" v-model="form.categoriaId"/>
                         </AppMultipleLine>
                     </div>
                 </section>
                 <section class="form-section">
-                    <div class="form-section__title">
-                        <AppTitle>Telefonos</AppTitle>
-                    </div>
-                    <div class="form-section__content">
-                        <Telefonos v-model="form.telefonos"/>
-                    </div>
+                    <FormSection :errors="errors" name="telefonos">
+                        <template slot="title">Telefonos</template>
+                        <Telefonos slot="content" :form-errors="errors" v-model="form.telefonos"/>
+                    </FormSection>
                 </section>
                 <section class="form-section">
-                    <div class="form-section__title">
-                        <AppTitle>Horarios</AppTitle>
-                    </div>
-                    <div class="form-section__content">
-                        <Horarios v-model="form.horarios"/>
-                    </div>
+                    <FormSection :errors="errors" name="horarios">
+                        <template slot="title">Horarios</template>
+                        <Horarios slot="content" :form-errors="errors"  v-model="form.horarios"/>
+                    </FormSection>
                 </section>
                 <section class="form-section">
                     <div class="form-section__title">
@@ -68,10 +64,13 @@ import AppButton from "../components/AppButton";
 import AppAlert from "../components/AppAlert";
 import AppCiudadInput from "../components/form/AppCiudadInput";
 import AppCategoriaInput from "../components/form/AppCategoriaInput";
+import ValidationUtil from "../libs/ValidationUtil";
+import FormSection from "../components/form/FormSection";
 
 export default {
     name: "CreateLugarPage",
     components: {
+        FormSection,
         AppCategoriaInput,
         AppCiudadInput, AppAlert, AppButton, Horarios, Telefonos, AppMultipleLine, AppFormInput, AppTitle},
     data() {
@@ -84,7 +83,8 @@ export default {
                 telefonos: [],
                 horarios: []
             },
-            error: null
+            error: null,
+            errors: {}
         }
     },
     methods: {
@@ -92,6 +92,35 @@ export default {
 
             // Reiniciar formulario
             this.error = null;
+
+            // Validaciones previas --- inicio
+            this.errors = {};
+            ValidationUtil.validateIfNotEmpty(this.errors, this.form, 'nombre');
+            ValidationUtil.validateIfNotEmpty(this.errors, this.form, 'descripcion');
+            ValidationUtil.validateIfNotEmpty(this.errors, this.form, 'ciudadId');
+            ValidationUtil.validateIfNotEmpty(this.errors, this.form, 'categoriaId');
+            ValidationUtil.validateIfExistsLength(this.errors, this.form, 'telefonos', 1, 'telefono');
+            ValidationUtil.validateIfExistsLength(this.errors, this.form, 'horarios', 1, 'horario');
+
+            // Validación de horarios
+            if (!this.errors['horarios']) {
+                for (var horario of this.form.horarios) {
+                    if (!(horario.lunes || horario.martes || horario.miercoles || horario.jueves || horario.viernes || horario.sabado || horario.domingo)) {
+                        this.errors['horarios'] = "¡Hay un horario en el que no hay dias seleccionados!";
+                        break;
+                    } else if (horario.inicioHoras === horario.finalHoras && horario.inicioMinutos === horario.finalMinutos) {
+                        this.errors['horarios'] = "¡Hay un horario sin ingresar los tiempos respectivos!";
+                        break;
+                    }
+                }
+            }
+
+            if (Object.keys(this.errors).length > 0) {
+                return;
+            }
+            // Validaciones previas --- final
+
+
 
             const request = this.$axios.post('lugares', this.form);
             request.then(() => {
@@ -103,7 +132,7 @@ export default {
                const { data } = response;
 
                // Problemas de validación
-               if (data.status === 1000) {
+               if (data.status === 2000) {
                    this.error = data.message;
                }
 
@@ -158,6 +187,10 @@ export default {
 
     .form-section:not(:first-child) {
         margin: 2rem 0;
+    }
+
+    .form-section__error {
+        color: #ff5252;
     }
 
     .form-section__content {

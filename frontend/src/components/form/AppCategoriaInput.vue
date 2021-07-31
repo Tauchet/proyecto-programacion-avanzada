@@ -4,6 +4,8 @@
                      :value="value"
                      @input="onChangeValue" :list="list"
                      key-type="nombre"
+                     :name="name"
+                     :errors="errors"
                      value-type="id" />
 </template>
 
@@ -14,6 +16,12 @@ export default {
     components: {AppFormSelector},
     props: {
         value: {
+            default: null
+        },
+        name: {
+            default: null
+        },
+        errors: {
             default: null
         }
     },

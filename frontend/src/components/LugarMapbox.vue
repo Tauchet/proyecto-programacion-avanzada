@@ -30,6 +30,15 @@ export default {
                 zoom: 15,
             });
 
+            map.addControl(new mapboxgl.GeolocateControl({
+                positionOptions: {
+                    enableHighAccuracy: true
+                },
+                trackUserLocation: true
+            }));
+
+            map.addControl(new mapboxgl.NavigationControl());
+
             const marker = new mapboxgl.Marker({});
             marker.setLngLat(LOCATION);
             marker.addTo(map);

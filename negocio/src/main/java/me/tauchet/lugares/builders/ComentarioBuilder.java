@@ -9,13 +9,13 @@ import lombok.Setter;
 public class ComentarioBuilder {
 
     private String texto;
-    private int calificacion;
+    private Integer calificacion;
 
     @Setter
-    private int usuarioId;
+    private Integer usuarioId;
 
     @Setter
-    private int lugarId;
+    private Integer lugarId;
 
     public ComentarioBuilder() {}
 

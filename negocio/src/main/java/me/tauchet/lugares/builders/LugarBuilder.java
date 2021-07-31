@@ -12,11 +12,11 @@ public class LugarBuilder {
 
     private String nombre;
     private String descripcion;
-    private int categoriaId;
-    private int usuarioId;
-    private int ciudadId;
-    private double latitud;
-    private double longitud;
+    private Integer categoriaId;
+    private Integer usuarioId;
+    private Integer ciudadId;
+    private Double latitud;
+    private Double longitud;
 
     private List<String> imagenes;
     private List<Long> telefonos;

@@ -1,20 +1,29 @@
 <template>
 <div id="my-lugares-page">
     <div class="container">
-        <AppAlert type="success" v-if="redirect">
-            <p>{{ redirect }}</p>
-        </AppAlert>
-        <template v-if="info.APROBADO.length > 0">
-            <AppTitle space><i class="fas fa-map-marked-alt"></i> Lugares publicados</AppTitle>
-            <LugarLista :list="info.APROBADO" />
+        <template v-if="info.APROBADO.length == 0 && info.ESPERANDO.length == 0 && info.DESAPROBADO.length == 0">
+            <div class="jumbotron">
+                <p><i class="fas fa-star-half-alt fa-5x"></i></p>
+                <h2>¡No has publicado aún algun lugar!</h2>
+                <p>¿Quieres crear uno? Dale <router-link to="/lugares/crear">Click aquí</router-link> o dirigete al apartado de <strong>CREAR LUGAR</strong> en el menú de navegación.</p>
+            </div>
         </template>
-        <template v-if="info.ESPERANDO.length > 0">
-            <AppTitle space><i class="far fa-map"></i> Lugares en verificación</AppTitle>
-            <LugarLista :list="info.ESPERANDO" />
-        </template>
-        <template v-if="info.DESAPROBADO.length > 0">
-            <AppTitle space><i class="fas fa-atlas"></i> Lugares desaprobados</AppTitle>
-            <LugarLista :list="info.DESAPROBADO" />
+        <template v-else>
+            <AppAlert type="success" v-if="redirect">
+                <p>{{ redirect }}</p>
+            </AppAlert>
+            <template v-if="info.APROBADO.length > 0">
+                <AppTitle space><i class="fas fa-map-marked-alt"></i> Lugares publicados</AppTitle>
+                <LugarLista :list="info.APROBADO" />
+            </template>
+            <template v-if="info.ESPERANDO.length > 0">
+                <AppTitle space><i class="far fa-map"></i> Lugares en verificación</AppTitle>
+                <LugarLista :list="info.ESPERANDO" />
+            </template>
+            <template v-if="info.DESAPROBADO.length > 0">
+                <AppTitle space><i class="fas fa-atlas"></i> Lugares desaprobados</AppTitle>
+                <LugarLista :list="info.DESAPROBADO" />
+            </template>
         </template>
     </div>
 </div>
@@ -58,5 +67,9 @@ export default {
 </script>
 
 <style scoped>
-
+.jumbotron {
+    text-align: center;
+    color: #444;
+    padding: 2rem 0;
+}
 </style>

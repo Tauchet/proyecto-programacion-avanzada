@@ -22,10 +22,12 @@ public class Comentario {
     @Temporal(TemporalType.DATE)
     private Date fechaComentario;
 
+
+    // NOTAS: Agregar fecha de la respuesta
+
     @ManyToOne
     private Lugar lugar;
 
-    // NOTAS: Agregar fecha de la respuesta
 
     @ManyToOne
     private Usuario usuario;

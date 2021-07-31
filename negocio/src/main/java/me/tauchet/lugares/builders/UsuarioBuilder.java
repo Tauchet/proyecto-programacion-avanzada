@@ -12,7 +12,7 @@ public class UsuarioBuilder {
     private String password;
     private String nombre;
     private String avatarUrl;
-    private int ciudadId;
+    private Integer ciudadId;
 
     public UsuarioBuilder() {}
 

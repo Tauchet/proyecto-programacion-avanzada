@@ -1,12 +1,16 @@
 package me.tauchet.lugares.servicios;
 
+import me.tauchet.lugares.UsuarioConRol;
 import me.tauchet.lugares.builders.UsuarioBuilder;
 import me.tauchet.lugares.entidad.Ciudad;
 import me.tauchet.lugares.entidad.Rol;
 import me.tauchet.lugares.entidad.Usuario;
+import me.tauchet.lugares.excepciones.ParametrosExcepcion;
+import me.tauchet.lugares.excepciones.PermisosExcepcion;
 import me.tauchet.lugares.excepciones.ServicioExcepcion;
 import me.tauchet.lugares.repositorio.CiudadRepositorio;
 import me.tauchet.lugares.repositorio.UsuarioRepositorio;
+import me.tauchet.lugares.utils.ValidacionUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.projection.ProjectionFactory;
 import org.springframework.stereotype.Service;
@@ -15,6 +19,7 @@ import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -30,7 +35,36 @@ public class UsuarioServicioImpl implements UsuarioServicio {
     private ProjectionFactory projectionFactory;
 
     @Override
+    public List<UsuarioConRol> buscarTodosConRol() {
+        return usuarioRepositorio.buscarTodos();
+    }
+
+    @Override
+    public void tienePermisos(int usuarioId, Rol rolNecesario) throws PermisosExcepcion {
+
+        Rol rol = this.usuarioRepositorio.buscarRolPorUsuarioId(usuarioId);
+        if (rol == null) {
+            rol = Rol.USUARIO;
+        }
+
+        if (rol.ordinal() < rolNecesario.ordinal()) {
+            throw new PermisosExcepcion("¡Lo sentimos! Necesitamos volver a autentificarte.");
+        }
+
+    }
+
+    @Override
     public void registrarUsuario(UsuarioBuilder builder) throws Exception {
+
+        ValidacionUtil.estaVacio("email", builder.getEmail());
+        ValidacionUtil.esCorreoValido("email", builder.getEmail());
+        ValidacionUtil.estaVacio("username", builder.getUsername());
+        ValidacionUtil.contieneEspacios("username", builder.getUsername());
+        ValidacionUtil.estaVacio("password", builder.getPassword());
+        ValidacionUtil.estaVacio("nombre", builder.getNombre());
+        ValidacionUtil.estaVacio("avatarUrl", builder.getAvatarUrl());
+        ValidacionUtil.esURLValido("avatarUrl", builder.getAvatarUrl());
+        ValidacionUtil.estaVacio("ciudadId", builder.getCiudadId());
 
         Optional<Usuario> usuarioCorreo = usuarioRepositorio.findByEmail(builder.getEmail());
         if (usuarioCorreo.isPresent()) {
@@ -56,42 +90,46 @@ public class UsuarioServicioImpl implements UsuarioServicio {
         usuario.setAvatarUrl(builder.getAvatarUrl());
         usuario.setCiudad(ciudad.get());
         usuario.setRol(Rol.USUARIO);
-        usuario = this.usuarioRepositorio.save(usuario);
+        this.usuarioRepositorio.save(usuario);
 
-        //projectionFactory.createProjection(UsuarioDTO.class, usuario);
 
     }
 
     @Override
-    public Usuario buscarUsuario(String nombre, String contrasenia) throws Exception {
+    public Usuario buscarUsuarioPorNombreOCorreo(String user, String password) throws Exception {
 
-        contrasenia = codificarEnSha512(contrasenia);
+        ValidacionUtil.estaVacio("user", user);
+        ValidacionUtil.contieneEspacios("user", user);
+        ValidacionUtil.estaVacio("password", password);
 
-        Usuario usuario = this.usuarioRepositorio.findByUsernameAndPassword(nombre, contrasenia);
-        if (usuario == null) {
-            throw new ServicioExcepcion("¡No se ha encontrado algún usuario con estos datos!");
-        }
-
-        return usuario;
-    }
-
-    @Override
-    public Usuario buscarUsuarioPorNombreOCorreo(String nombreOCorre, String contrasenia) throws Exception {
-
-        contrasenia = codificarEnSha512(contrasenia);
+        password = codificarEnSha512(password);
 
         Usuario usuario;
-        if (nombreOCorre.contains("@")) {
-            usuario = this.usuarioRepositorio.findByEmailAndPassword(nombreOCorre, contrasenia);
+        if (user.contains("@")) {
+            ValidacionUtil.esCorreoValido("user", user);
+            usuario = this.usuarioRepositorio.findByEmailAndPassword(user, password);
         } else {
-            usuario = this.usuarioRepositorio.findByUsernameAndPassword(nombreOCorre, contrasenia);
+            usuario = this.usuarioRepositorio.findByUsernameAndPassword(user, password);
         }
 
         if (usuario == null) {
-            throw new ServicioExcepcion("¡No se ha encontrado algún usuario con estos datos!");
+            throw new ServicioExcepcion("¡No se ha encontrado algún registro con esta cuenta!");
         }
 
         return usuario;
+    }
+
+    @Override
+    public void actualizarRol(int usuarioId, Rol rol) throws ServicioExcepcion {
+
+        Optional<Usuario> usuario = this.usuarioRepositorio.findById(usuarioId);
+        if (usuario.isEmpty()) {
+            throw new ServicioExcepcion("¡No se ha encontrado el usuario buscado!");
+        }
+
+        usuario.get().setRol(rol);
+        this.usuarioRepositorio.save(usuario.get());
+
     }
 
     private String codificarEnSha512(String mensaje) throws NoSuchAlgorithmException {

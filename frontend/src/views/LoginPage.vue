@@ -70,7 +70,7 @@ export default {
                 const { data } = response;
 
                 // Problemas de validación
-                if (data.status === 1000) {
+                if (data.status === 2000) {
                     this.alertMessage = data.message;
                 }
 

@@ -54,6 +54,17 @@ _axios.interceptors.response.use(
                 return;
             }
 
+            if (statusCode === 2500) {
+                const currentRoute = window.global_app.$router.currentRoute;
+                if (currentRoute) {
+                    const instance = currentRoute.matched[currentRoute.matched.length - 1].instances.default;
+                    if (instance && instance.errors) {
+                        instance.$set(instance.errors, error.response.data.field, error.response.data.message);
+                    }
+                }
+                return;
+            }
+
         }
 
         // Do something with response error

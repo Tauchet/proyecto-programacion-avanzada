@@ -7,9 +7,7 @@
         <h3>{{ usuario.nombre }}</h3>
         <p>@{{ usuario.username }}</p>
     </div>
-    <div class="usuario-block__slot">
-        <slot/>
-    </div>
+    <slot/>
 </div>
 </template>
 

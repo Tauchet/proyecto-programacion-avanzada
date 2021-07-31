@@ -1,18 +1,17 @@
 <template>
 <div id="not-found-page">
     <div class="container">
-        <AppCiudadInput placeholder="Seleccionar Ciudad" v-model="form.ciudad" label="Ciudades"/>
-        <AppFormSelector placeholder="Seleccionar Categoria" v-model="form.categoria" label="Categorias"/>
+        <p class="icon"><i class="fas fa-fire-extinguisher fa-10x"></i></p>
+        <h1>¡Esta página no se encuentra!</h1>
+        <p>Nuestro mundo es tan grande que hasta el mismisimo <strong>Loki</strong> es capaz de escaparse de un avión.</p>
     </div>
 </div>
 </template>
 
 <script>
-import AppFormSelector from "../components/form/AppFormSelector";
-import AppCiudadInput from "../components/form/AppCiudadInput";
 export default {
     name: "NotFoundPage",
-    components: {AppCiudadInput, AppFormSelector},
+    components: {},
     data() {
         return {
             form: {
@@ -25,5 +24,11 @@ export default {
 </script>
 
 <style scoped>
-
+.icon {
+    font-size: 2rem;
+}
+#not-found-page {
+    margin-top: 1rem;
+    text-align: center;
+}
 </style>

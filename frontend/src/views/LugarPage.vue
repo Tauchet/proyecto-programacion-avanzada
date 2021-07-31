@@ -42,8 +42,21 @@
             <div class="lugar-page__comments" v-if="this.info.lugar.estado === 'APROBADO'">
                 <div class="container">
                     <AppTitle v-if="isLogged || info.lugar.comentarios.length > 0" space><i class="fas fa-comments"></i> Comentarios</AppTitle>
-                    <div v-if="isLogged && !info.comentario">
-                        <AppFormInput @enter="sendComment" v-model="comment.texto" extra-type="textarea" label="Ingresa tu comentario aquí." />
+                    <div class="create-comment" v-if="isLogged && !info.comentario">
+                        <div class="app-form-input app-form-stars">
+                            <label class="app-form-input__name">Calificación</label>
+                            <div class="stars">
+                                <div class="star" v-for="number in 5" :key="number" @click.prevent="() => changeCalification(number)">
+                                    <template v-if="number <= comment.calificacion">
+                                        <i class="fas fa-star"></i>
+                                    </template>
+                                    <template v-else>
+                                        <i class="far fa-star"></i>
+                                    </template>
+                                </div>
+                            </div>
+                        </div>
+                        <AppFormInput name="texto" :errors="commentErrors" @enter="sendComment" v-model="comment.texto" extra-type="textarea" label="Ingresa tu comentario aquí." />
                         <div class="box-center">
                             <AppButton @click="sendComment">CREAR COMENTARIO</AppButton>
                         </div>
@@ -58,6 +71,26 @@
 </template>
 
 <style lang="scss" scoped>
+.stars {
+    margin-top: 0.4rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.star {
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-size: 1.7rem;
+    transition: 0.4s;
+    color: #F39C12;
+}
+
+.star:hover {
+    transform: scale(1.2);
+}
+
 .lugar-page__images {
     background: #eee;
     border-radius: 0.7rem;
@@ -82,6 +115,10 @@
         margin: 0;
     }
 
+}
+
+.create-comment {
+    margin-bottom: 1rem;
 }
 
 
@@ -117,6 +154,9 @@ import AppTitle from "../components/AppTitle";
 import AppFormInput from "../components/form/AppFormInput";
 import Comment from "./LugarPage/Comment";
 import AppError from "../components/AppError";
+import ValidationUtil from "../libs/ValidationUtil";
+
+import routes from '../routes/routes';
 
 export default {
     name: "LugarPage",
@@ -132,21 +172,34 @@ export default {
                 comentario: false
             },
             comment: {
-                calificacion: 3,
+                calificacion: 0,
                 texto: ''
-            }
+            },
+            commentErrors: {}
         }
     },
     computed: {
         isModerator() {
-            return this.$store.state.user !== null && this.$store.state.rol === 'MODERADOR';
+            const rolesIndex = routes.roles.indexOf(this.$store.state.rol || "USUARIO");
+            return rolesIndex >= 1;
         },
         isLogged() {
             return this.$store.state.user !== null;
         }
     },
     methods: {
+        changeCalification(number) {
+            this.comment.calificacion = number;
+        },
         sendComment() {
+
+            // Validaciones previas --- inicio
+            this.commentErrors = {};
+            ValidationUtil.validateIfNotEmpty(this.commentErrors, this.comment, 'texto');
+            if (Object.keys(this.commentErrors).length > 0) {
+                return;
+            }
+            // Validaciones previas --- final
 
             const lugarId = this.$route.params.lugarId;
             const request = this.$axios.post('lugares/' + lugarId + '/comentarios', this.comment);
@@ -173,7 +226,7 @@ export default {
                 const { data } = response;
 
                 // Problemas de validación
-                if (data.status === 1000) {
+                if (data.status === 2000) {
                     this.alertType = 'danger';
                     this.alertMessage = data.message;
                 }
@@ -197,7 +250,7 @@ export default {
                 const { data } = response;
 
                 // Problemas de validación
-                if (data.status === 1000) {
+                if (data.status === 2000) {
                     this.alertType = 'danger';
                     this.alertMessage = data.message;
                 }

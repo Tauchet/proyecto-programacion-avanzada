@@ -12,10 +12,10 @@ public class RestErrorRespuesta {
     private final String error;
     private final String message;
 
-    public RestErrorRespuesta(String mensaje) {
+    public RestErrorRespuesta(String mensaje, int estado, String errorName) {
         this.timestamp = LocalDateTime.now();
-        this.status = 1000;
-        this.error = "Service Error";
+        this.status = estado;
+        this.error = errorName;
         this.message = mensaje;
     }
 

@@ -1,8 +1,11 @@
 package me.tauchet.lugares.controladores;
 
 import me.tauchet.lugares.builders.UsuarioBuilder;
+import me.tauchet.lugares.entidad.Usuario;
 import me.tauchet.lugares.peition.ConectarPeticion;
+import me.tauchet.lugares.respuestas.TokenRespuesta;
 import me.tauchet.lugares.servicios.UsuarioServicio;
+import me.tauchet.lugares.util.JwtTokenUtil;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,9 +14,11 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api")
 public class UsuarioControlador {
 
+    private final JwtTokenUtil jwtTokenUtil;
     private final UsuarioServicio usuarioServicio;
 
-    public UsuarioControlador(UsuarioServicio usuarioServicio) {
+    public UsuarioControlador(JwtTokenUtil jwtTokenUtil, UsuarioServicio usuarioServicio) {
+        this.jwtTokenUtil = jwtTokenUtil;
         this.usuarioServicio = usuarioServicio;
     }
 
@@ -24,9 +29,11 @@ public class UsuarioControlador {
     }
 
     @PostMapping("/conectar")
-    public ResponseEntity<Boolean> conectarUsuario(@RequestBody ConectarPeticion peticion) throws Exception {
-        usuarioServicio.buscarUsuarioPorNombreOCorreo(peticion.getUser(), peticion.getPassword());
-        return new ResponseEntity<>(true, HttpStatus.OK);
+    public ResponseEntity<TokenRespuesta> conectarUsuario(@RequestBody ConectarPeticion peticion) throws Exception {
+        Usuario usuario = usuarioServicio.buscarUsuarioPorNombreOCorreo(peticion.getUser(), peticion.getPassword());
+        String token = this.jwtTokenUtil.generarToken(usuario.getId(), usuario.getRol());
+        TokenRespuesta tokenRespuesta = new TokenRespuesta(token, usuario.getRol(), usuario.getId());
+        return new ResponseEntity<>(tokenRespuesta, HttpStatus.OK);
     }
 
 }

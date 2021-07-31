@@ -6,7 +6,7 @@ import store from './store'
 
 Vue.config.productionTip = false
 
-new Vue({
+window.global_app = new Vue({
   router,
   store,
   render: h => h(App)

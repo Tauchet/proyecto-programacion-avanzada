@@ -1,41 +1,44 @@
 <template>
     <div id="home-page">
-        <div class="home-page__container">
-            <div class="title-general">
-                <h1><i class="fas fa-globe"></i> EXPLORAR</h1>
-            </div>
-            <div class="tags">
-                <button class="tag" @click="() => moveCategoria(-1)" :class="{active: categoria === -1}">Todos</button>
-                <button class="tag" v-for="item in categorias" :class="{active: categoria === item.id}" @click="() => moveCategoria(item.id)" :key="item.id">{{ item.nombre }}</button>
-            </div>
-            <div class="search">
-                <AppFormInput @enter="load" label="Búsqueda" v-model="form" />
-                <div class="search-button">
-                    <AppButton @click="load" small>Buscar</AppButton>
+        <GeneralMapbox ref="map" />
+        <div class="home-page__container" id="lugares">
+            <div class="container">
+                <div class="title-general">
+                    <h1><i class="fas fa-globe"></i> EXPLORAR</h1>
                 </div>
-            </div>
-            <div class="lugares">
-                <div class="lugar" v-for="lugar in list" :key="lugar.id">
-                    <div class="lugar-info">
-                        <div class="lugar-title">
-                            <h3>{{ lugar.nombre }}</h3>
-                            <p>{{ lugar.categoria.nombre }}</p>
-                        </div>
-                        <div class="lugar-date">
-                            <p>{{lugar.fechaCreacion}}</p>
-                        </div>
-                    </div>
-                    <div class="lugar-extra">
-                        <p><strong>Ciudad:</strong> {{lugar.ciudad.nombre}}</p>
-                    </div>
-                    <div class="lugar-options">
-                        <AppButton inline small @click="() => viewInMap(lugar)">Ver en el Mapa</AppButton>
-                        <AppButton type="purple" inline small>Más Información</AppButton>
+                <div class="tags">
+                    <button class="tag" @click="() => moveCategoria(-1)" :class="{active: categoria === -1}">Todos</button>
+                    <button class="tag" v-for="item in categorias" :class="{active: categoria === item.id}" @click="() => moveCategoria(item.id)" :key="item.id">{{ item.nombre }}</button>
+                </div>
+                <div class="search">
+                    <AppFormInput @enter="load" label="Búsqueda" v-model="form" />
+                    <div class="search-button">
+                        <AppButton @click="load">Buscar</AppButton>
                     </div>
                 </div>
+                <transition name="fade" mode="out-in">
+                    <div class="lugares">
+                        <div class="lugar" v-for="lugar in list" :key="lugar.id">
+                            <div class="lugar-info">
+                                <div class="lugar-title">
+                                    <h3>{{ lugar.nombre }}</h3>
+                                    <p>{{ lugar.categoria.nombre }}</p>
+                                </div>
+                                <div class="lugar-date">
+                                    <p><strong>Creación:</strong> {{lugar.fechaCreacion}}</p>
+                                    <p><strong>Ciudad:</strong> {{lugar.ciudad.nombre}}</p>
+                                </div>
+                                <div class="lugar-options">
+                                    <AppButton inline small @click="() => viewInMap(lugar)">Ver en el Mapa</AppButton>
+                                    <AppButton @click="() => openInformation(lugar)" type="purple" inline small>Más Información</AppButton>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </transition>
             </div>
         </div>
-        <GeneralMapbox ref="map" />
+
     </div>
 </template>
 
@@ -57,6 +60,9 @@ export default {
         }
     },
     methods: {
+        openInformation(lugar) {
+            this.$router.push('lugares/' + lugar.id);
+        },
         async load() {
 
             const params = {};
@@ -95,6 +101,8 @@ export default {
 
                 this.markers[lugar.id] = marker;
 
+
+
             }
 
 
@@ -104,6 +112,7 @@ export default {
             this.load();
         },
         viewInMap(lugar) {
+            window.scrollTo(0,0);
             this.$refs.map.handle.flyTo({
                 zoom: 16,
                 center: [lugar.longitud, lugar.latitud],
@@ -133,9 +142,8 @@ export default {
 }
 
 .tags {
-    display: grid;
+    display: flex;
     gap: 0.5rem;
-    grid-template-columns: repeat(3, 1fr);
     margin-bottom: 2rem;
 }
 
@@ -148,7 +156,6 @@ export default {
     transition: 0.4s;
     text-transform: uppercase;
 }
-
 
 
 .tag.active {
@@ -168,6 +175,7 @@ export default {
 .lugar-info {
     display: flex;
     align-items: center;
+    gap: 1rem;
 }
 
 .lugar-extra {
@@ -211,12 +219,7 @@ export default {
     margin-bottom: 1rem;
 }
 
-#home-page {
-    overflow: auto;
-    flex: 1;
-    display: grid;
-    grid-template-columns: 30% 1fr;
-}
+
 
 </style>
 
