@@ -1,53 +1,59 @@
 <template>
     <div id="lugar-page">
-        <div class="lugar-page__header">
-            <div class="container">
-                <AppAlert :type="alertType" v-if="alertMessage">
-                    <p>{{ alertMessage }}</p>
-                </AppAlert>
-                <div class="lugar-page__header-container">
-                    <div class="lugar-page__header-title">
-                        <h1>{{ info.lugar.nombre }}</h1>
-                        <p class="lugar-page__header-category">{{ info.lugar.categoria.nombre }}</p>
-                    </div>
-                    <div class="lugar-page__header-extra">
-                        <p>{{ info.lugar.fechaCreacion }}</p>
-                        <div class="lugar-page__header-options" v-if="info.lugar.estado === 'ESPERANDO'">
-                            <AppButton type="success" @click="approve" inline>APROBAR</AppButton>
-                            <AppButton type="danger" @click="disapprove" inline>DESAPROBAR</AppButton>
+        <AppError v-if="notification" :message="notification" />
+        <template v-if="info.lugar !== null">
+            <div class="lugar-page__header">
+                <div class="container">
+                    <AppAlert :type="alertType" v-if="alertMessage">
+                        <p>{{ alertMessage }}</p>
+                    </AppAlert>
+                    <AppAlert v-if="info.lugar.estado === 'DESAPROBADO'">
+                        <p>¡Este lugar fue <strong>desaprobado</strong> el <strong>{{info.lugar.fechaAprobacion}}</strong>! Podrás ver la información solamente.</p>
+                    </AppAlert>
+                    <div class="lugar-page__header-container">
+                        <div class="lugar-page__header-title">
+                            <h1>{{ info.lugar.nombre }}</h1>
+                            <p class="lugar-page__header-category">{{ info.lugar.categoria.nombre }}</p>
+                        </div>
+                        <div class="lugar-page__header-extra">
+                            <p>{{ info.lugar.fechaCreacion }}</p>
+                            <div class="lugar-page__header-options" v-if="info.lugar.estado === 'ESPERANDO' && isModerator">
+                                <AppButton type="success" @click="approve" inline>APROBAR</AppButton>
+                                <AppButton type="danger" @click="disapprove" inline>DESAPROBAR</AppButton>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="lugar-page__map" v-if="this.info.lugar">
-            <Mapbox :lugar="this.info.lugar" />
-        </div>
-        <div class="lugar-page__info">
-            <div class="container">
-                <AppMultipleLine columns="2">
-                    <div class="lugar-page__descripcion">
-                        <UsuarioBlock :usuario="this.info.lugar.usuario" divider/>
-                        <p>{{ this.info.lugar.descripcion }}</p>
-                    </div>
-                    <div class="lugar-page__images"></div>
-                </AppMultipleLine>
+            <div class="lugar-page__map" v-if="this.info.lugar">
+                <Mapbox :lugar="this.info.lugar" />
             </div>
-        </div>
-        <div class="lugar-page__comments" v-if="this.info.lugar.estado === 'APROBADO'">
-            <div class="container">
-                <AppTitle space><i class="fas fa-comments"></i> Comentarios</AppTitle>
-                <form action="#" v-if="!info.comentario">
-                    <AppFormInput v-model="comment.texto" extra-type="textarea" label="Ingresa tu comentario aquí." />
-                    <div class="box-center">
-                        <AppButton @click="sendComment">CREAR COMENTARIO</AppButton>
-                    </div>
-                </form>
-                <div class="comments">
-                    <Comment v-for="comment in info.lugar.comentarios" :key="comment.id" :lugar="info.lugar" :info="comment" />
+            <div class="lugar-page__info">
+                <div class="container">
+                    <AppMultipleLine columns="2">
+                        <div class="lugar-page__descripcion">
+                            <UsuarioBlock :usuario="this.info.lugar.usuario" divider/>
+                            <p>{{ this.info.lugar.descripcion }}</p>
+                        </div>
+                        <div class="lugar-page__images"></div>
+                    </AppMultipleLine>
                 </div>
             </div>
-        </div>
+            <div class="lugar-page__comments" v-if="this.info.lugar.estado === 'APROBADO'">
+                <div class="container">
+                    <AppTitle v-if="isLogged || info.lugar.comentarios.length > 0" space><i class="fas fa-comments"></i> Comentarios</AppTitle>
+                    <div v-if="isLogged && !info.comentario">
+                        <AppFormInput @enter="sendComment" v-model="comment.texto" extra-type="textarea" label="Ingresa tu comentario aquí." />
+                        <div class="box-center">
+                            <AppButton @click="sendComment">CREAR COMENTARIO</AppButton>
+                        </div>
+                    </div>
+                    <div class="comments">
+                        <Comment v-for="comment in info.lugar.comentarios" :key="comment.id" :lugar="info.lugar" :info="comment" />
+                    </div>
+                </div>
+            </div>
+        </template>
     </div>
 </template>
 
@@ -110,12 +116,14 @@ import AppAlert from "../components/AppAlert";
 import AppTitle from "../components/AppTitle";
 import AppFormInput from "../components/form/AppFormInput";
 import Comment from "./LugarPage/Comment";
+import AppError from "../components/AppError";
 
 export default {
     name: "LugarPage",
-    components: {Comment, AppFormInput, AppTitle, AppAlert, UsuarioBlock, AppMultipleLine, Mapbox, AppButton},
+    components: {AppError, Comment, AppFormInput, AppTitle, AppAlert, UsuarioBlock, AppMultipleLine, Mapbox, AppButton},
     data() {
         return {
+            notification: null,
             alertType: 'success',
             alertMessage: null,
             info: {
@@ -127,6 +135,14 @@ export default {
                 calificacion: 3,
                 texto: ''
             }
+        }
+    },
+    computed: {
+        isModerator() {
+            return this.$store.state.user !== null && this.$store.state.rol === 'MODERADOR';
+        },
+        isLogged() {
+            return this.$store.state.user !== null;
         }
     },
     methods: {
@@ -198,6 +214,12 @@ export default {
                 this.info = data;
             });
 
+            request.catch(({ response }) => {
+                console.log(response.data.status);
+                if (response && response.data && response.data.status === 1000) {
+                    this.notification = response.data.message;
+                }
+            });
 
         }
     },

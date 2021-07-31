@@ -1,21 +1,25 @@
 <template>
-<div class="app-ciudad-input">
-    <label for="">Ciudad</label>
-    <select @change="onChangeValue">
-        <option selected disabled>Seleccionar Ciudad</option>
-        <option v-for="item in list" :key="item.id" :value="item.id">
-            {{ item.nombre }}
-        </option>
-    </select>
-</div>
+<AppFormSelector placeholder="Seleccionar Ciudad"
+                 label="Ciudad"
+                 :value="value"
+                 @input="onChangeValue" :list="list"
+                 key-type="nombre"
+                 value-type="id" />
 </template>
 
 <script>
+import AppFormSelector from "./AppFormSelector";
 export default {
     name: "AppCiudadInput",
+    components: {AppFormSelector},
+    props: {
+        value: {
+            default: null
+        }
+    },
     methods: {
-        onChangeValue(event) {
-            this.$emit('input', event.target.value);
+        onChangeValue(newValue) {
+            this.$emit('input', newValue);
         }
     },
     computed: {

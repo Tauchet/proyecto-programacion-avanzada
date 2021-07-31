@@ -2,7 +2,7 @@
     <div id="create-lugar-page">
         <div class="container">
             <div id="map"></div>
-            <form action="#">
+            <div>
                 <section class="form-section">
                     <div class="form-section__title">
                         <AppTitle>Información General</AppTitle>
@@ -38,8 +38,8 @@
                     </div>
                     <div class="form-section__content">
                         <AppMultipleLine columns="2">
-                            <AppFormInput v-model="form.latitud" label="Latitud" read-only/>
                             <AppFormInput v-model="form.longitud" label="Longitud" read-only/>
+                            <AppFormInput v-model="form.latitud" label="Latitud" read-only/>
                         </AppMultipleLine>
                     </div>
                 </section>
@@ -49,7 +49,7 @@
                 <div class="box-center">
                     <AppButton @click="sendForm" type="success" big>CREAR LUGAR</AppButton>
                 </div>
-            </form>
+            </div>
         </div>
     </div>
 </template>
@@ -94,11 +94,8 @@ export default {
             this.error = null;
 
             const request = this.$axios.post('lugares', this.form);
-            request.then(({ data }) => {
-
-                // NOTAS: Reederigir a la página de notas.
-                console.log("Resultado", data);
-
+            request.then(() => {
+                this.$router.push('/mis-lugares?redirect=¡El lugar ha sido creado correctamente! Estaremos verificandolo lo más pronto posible...');
             });
 
             request.catch(({ response }) => {
@@ -115,23 +112,39 @@ export default {
         },
         async createMap() {
             mapboxgl.accessToken = "pk.eyJ1IjoidGF1Y2hldCIsImEiOiJja3Jtd3h0d2M2MGdwMnBwZGRyNGFlaWptIn0.vFy_VTRRTWpDT5tvMwb6Ng";
-            const INITIAL_LOCATION = [this.form.longitud, this.form.latitud];
             const map = new mapboxgl.Map({
                 container: "map",
                 style: "mapbox://styles/mapbox/streets-v11",
-                center: INITIAL_LOCATION,
-                zoom: 12,
+                center: [-75.27986747330804,4.966951000736728],
+                zoom: 3,
             });
-            const marker = new mapboxgl.Marker({
-                draggable: true,
-            })
-                .setLngLat(INITIAL_LOCATION)
+            map.on('click', ({ lngLat }) => {
+                this.marker.setLngLat([lngLat.lng, lngLat.lat]);
+                this.form.longitud = lngLat.lng;
+                this.form.latitud = lngLat.lat;
+            });
+            map.on('load', function() {
+                if ("geolocation" in navigator) {
+                    navigator.geolocation.getCurrentPosition(position => {
+                        map.flyTo({
+                            center: [position.coords.longitude, position.coords.latitude],
+                            esential: true,
+                            zoom: 13
+                        });
+                    });
+                }
+            });
+            map.addControl(new mapboxgl.GeolocateControl({
+                positionOptions: {
+                    enableHighAccuracy: true
+                },
+                trackUserLocation: true
+            }));
+
+            map.addControl(new mapboxgl.NavigationControl());
+            this.marker = new mapboxgl.Marker({})
+                .setLngLat([this.form.longitud, this.form.latitud])
                 .addTo(map);
-            marker.on("dragend", () => {
-                const location = marker.getLngLat();
-                this.form.longitud = location.lng;
-                this.form.latitud = location.lat;
-            });
         }
     },
     mounted() {
@@ -142,6 +155,14 @@ export default {
 
 <style lang="scss" scoped>
 #create-lugar-page {
+
+    .form-section:not(:first-child) {
+        margin: 2rem 0;
+    }
+
+    .form-section__content {
+        margin-top: 1rem;
+    }
 
     .container {
         display: grid;

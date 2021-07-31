@@ -1,6 +1,6 @@
 <template>
 <AuthPage>
-    <form action="#" class="auth-page__form">
+    <div class="auth-page__form">
         <AppFormInput label="Nombre" v-model="form.nombre" />
         <AppFormInput label="Correo Eletronico" type="email" v-model="form.email" />
         <AppFormInput label="Nombre de Usuario" v-model="form.username" />
@@ -15,7 +15,7 @@
             <AppButton @click="sendForm">Registrarse</AppButton>
             <p>¿Ya tienes una cuenta? <router-link to="/entrar">Iniciar Sesión</router-link></p>
         </div>
-    </form>
+    </div>
 </AuthPage>
 </template>
 
@@ -37,7 +37,8 @@ export default {
                 password: '',
                 passwordConfirm: '',
                 avatarUrl: '',
-                ciudadId: -1
+                ciudadId: null,
+                categoriaId: null
             },
             error: null
         }
@@ -49,7 +50,7 @@ export default {
 
             const request = this.$axios.post('registro', this.form);
             request.then(() => {
-                // NOTAS: Redireccionar al registrarse.
+                this.$router.push('/entrar?success=¡Has registrado correctamente tu cuenta! Inicia sesión desde aquí.');
             });
 
             request.catch(({ response }) => {

@@ -1,8 +1,11 @@
 <template>
 <div class="lugar-lista">
     <div class="lugar" v-for="lugar in list" :key="lugar.id"
-         :class="[{clicked: lugar.estado === 'APROBADO'}, lugar.estado.toLowerCase()]"
+         :class="[{clicked: lugar.estado === 'APROBADO' || forceClicked}, lugar.estado.toLowerCase()]"
          @click="() => open(lugar)">
+        <div class="lugar-user" v-if="user">
+            <UsuarioBlock :usuario="lugar.usuario" />
+        </div>
         <div class="lugar-info">
             <h3>{{ lugar.nombre }}</h3>
             <p class="lugar-label">{{ lugar.categoria.nombre ? lugar.categoria.nombre : lugar.categoria }}</p>
@@ -14,9 +17,6 @@
             <div class="lugar-date">
                 <p class="lugar-label">APROBADO DESDE</p>
                 <p>{{lugar.fechaAprobacion}}</p>
-            </div>
-            <div class="lugar-footer">
-                <p class="lugar-icon"><i class="fas fa-chevron-right fa-3x"></i></p>
             </div>
         </template>
         <template v-else-if="lugar.estado === 'ESPERANDO'">
@@ -37,6 +37,9 @@
                 <p>{{lugar.fechaAprobacion}}</p>
             </div>
         </template>
+        <div class="lugar-footer" v-if="lugar.estado === 'APROBADO' || forceClicked">
+            <p class="lugar-icon"><i class="fas fa-chevron-right fa-3x"></i></p>
+        </div>
     </div>
 </div>
 </template>
@@ -57,6 +60,10 @@
     align-items: center;
     gap: 1rem;
     transition: 0.4s;
+}
+
+.lugar:not(:last-child) {
+    margin-bottom: 0.5rem;
 }
 
 .lugar.esperando {
@@ -123,12 +130,14 @@
 </style>
 
 <script>
+import UsuarioBlock from "../../components/UsuarioBlock";
 export default {
     name: "LugarLista",
+    components: {UsuarioBlock},
     methods: {
         open(lugar) {
 
-            if (lugar.estado !== 'APROBADO') {
+            if (lugar.estado !== 'APROBADO' && !this.forceClicked) {
                 return;
             }
 
@@ -136,7 +145,15 @@ export default {
         }
     },
     props: {
-        list: Array
+        list: Array,
+        user: {
+            type: Boolean,
+            default: false
+        },
+        forceClicked: {
+            type: Boolean,
+            default: false
+        }
     }
 }
 </script>

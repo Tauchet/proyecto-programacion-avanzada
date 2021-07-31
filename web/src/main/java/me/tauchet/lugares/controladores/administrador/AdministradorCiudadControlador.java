@@ -26,12 +26,6 @@ public class CiudadControlador {
         return new ResponseEntity<>(ciudades, HttpStatus.OK);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Integer> eliminar(@PathVariable("id") int id) throws ServicioExcepcion {
-        ciudadServicio.eliminar(id);
-        return new ResponseEntity<>(id, HttpStatus.NO_CONTENT);
-    }
-
     @PostMapping()
     public ResponseEntity<Ciudad> crear(@RequestBody Ciudad ciudad) throws ServicioExcepcion {
         Ciudad resultado = this.ciudadServicio.crear(ciudad);

@@ -1,6 +1,9 @@
 <template>
 <div id="my-lugares-page">
     <div class="container">
+        <AppAlert type="success" v-if="redirect">
+            <p>{{ redirect }}</p>
+        </AppAlert>
         <template v-if="info.APROBADO.length > 0">
             <AppTitle space><i class="fas fa-map-marked-alt"></i> Lugares publicados</AppTitle>
             <LugarLista :list="info.APROBADO" />
@@ -20,11 +23,13 @@
 <script>
 import AppTitle from "../components/AppTitle";
 import LugarLista from "./MyLugaresPage/LugarLista";
+import AppAlert from "../components/AppAlert";
 export default {
     name: "MyLugaresPage",
-    components: {LugarLista, AppTitle},
+    components: {AppAlert, LugarLista, AppTitle},
     data() {
         return {
+            redirect: this.$route.query.redirect || null,
             info: {
                 APROBADO: [],
                 ESPERANDO: [],

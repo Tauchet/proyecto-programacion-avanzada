@@ -1,5 +1,5 @@
 <template>
-    <div class="app-form-input" :class="{'focus': focus, 'label': label, 'read': readOnly}">
+    <div class="app-form-input" :class="{'focus': focus, 'label': label, 'read': readOnly, 'error': error}">
         <label class="app-form-input__name" v-if="label">{{ label }}</label>
         <template v-if="extraType === 'input'">
             <input class="app-form-input__value"
@@ -7,7 +7,10 @@
                    :type="type"
                    @keyup.prevent="onInput"
                    @focus="onChangeFocus"
-                   @blur="onChangeFocus">
+                   @blur="onChangeFocus"
+                   v-on:keyup.enter="onSubmit"
+                   :disabled="readOnly"
+            >
         </template>
         <template v-else>
             <textarea @input.capture="onInput"
@@ -17,16 +20,40 @@
                       rows="3"
                       v-model="value"
                       @focus="onChangeFocus"
-                      @blur="onChangeFocus"></textarea>
+                      @blur="onChangeFocus"
+                      v-on:keyup.enter="onSubmit"
+                      :disabled="readOnly"></textarea>
         </template>
+        <div class="app-form-input__error" v-if="error">
+            <p><i class="fab fa-fort-awesome-alt"></i> {{ error }}</p>
+        </div>
     </div>
 </template>
+
 
 <script>
 export default {
     name: "AppFormInput",
+    computed: {
+        error() {
+            if (this.errors !== null) {
+                return this.errors[this.name] || undefined;
+            }
+            return undefined;
+        }
+    },
     props: {
         label: String,
+        name: {
+            type: String,
+            default: 'General'
+        },
+        errors: {
+            type: Object,
+            default() {
+                return null;
+            }
+        },
         extraType: {
             type: String,
             default: 'input'
@@ -57,6 +84,9 @@ export default {
 
             this.$emit("input", event.target.value);
 
+        },
+        onSubmit() {
+            this.$emit("enter");
         },
         onChangeFocus() {
 

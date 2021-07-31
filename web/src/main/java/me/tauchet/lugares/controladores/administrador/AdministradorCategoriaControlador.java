@@ -30,11 +30,6 @@ public class CategoriaControlador {
         Categoria resultado = this.categoriaServicio.crear(categoria);
         return new ResponseEntity<>(resultado, HttpStatus.OK);
     }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Integer> eliminar(@PathVariable("id") int id) throws ServicioExcepcion {
-        categoriaServicio.eliminar(id);
-        return new ResponseEntity<>(id, HttpStatus.NO_CONTENT);
-    }
+    
 
 }

@@ -5,8 +5,7 @@
             <UsuarioBlock :usuario="info.usuario" divider>
                 <div class="comment-extra">
                     <p>{{ info.fechaComentario }}</p>
-                    <!-- NOTAS: Verificar si es el dueño del lugar para responder -->
-                    <AppButton @click="reply" type="purple" v-if="(!showReply) && !info.respuesta">RESPONDER</AppButton>
+                    <AppButton @click="reply" type="purple" v-if="isOwner && (!showReply) && !info.respuesta">RESPONDER</AppButton>
                 </div>
             </UsuarioBlock>
         </div>
@@ -51,6 +50,11 @@ export default {
     props: {
         info: Object,
         lugar: Object
+    },
+    computed: {
+        isOwner() {
+            return this.$store.state.userId === this.lugar.usuario.id;
+        }
     },
     data() {
         return {

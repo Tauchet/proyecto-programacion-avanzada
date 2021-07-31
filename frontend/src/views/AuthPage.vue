@@ -15,10 +15,11 @@ export default {
 }
 </script>
 
-<style scoped>
+<style>
 h1 {
     margin: 0;
 }
+
 .auth-page__logo {
     font-size: 1.3rem;
     text-align: center;
@@ -40,6 +41,7 @@ h1 {
     padding: 3rem;
     border-radius: 3rem;
     width: 30%;
+    min-width: 700px;
     margin: auto;
 }
 </style>
