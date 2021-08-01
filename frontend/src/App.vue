@@ -220,6 +220,8 @@ header {
 
 .app-form-input {
 
+    text-align: left;
+
     &:not(:first-child:last-child) {
         margin-bottom: 1rem;
     }

@@ -8,4 +8,5 @@ public interface LugarConUsuario extends LugarBase {
 
     UsuarioBase getUsuario();
 
+
 }

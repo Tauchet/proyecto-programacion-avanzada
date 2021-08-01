@@ -34,6 +34,9 @@ public interface LugarRepositorio extends JpaRepository<Lugar, Integer> {
             "(SELECT count(comentario) FROM Comentario comentario WHERE comentario.lugar = lugar AND comentario.respuesta IS NULL)) FROM Lugar lugar WHERE lugar.usuario.id = :usuarioId")
     List<MiLugarDTO> buscarLugaresPorUsuario(int usuarioId);
 
+    @Query("SELECT favorito.lugar FROM Favorito favorito WHERE favorito.usuario.id = :usuarioId")
+    List<LugarBase> buscarFavoritosPorUsuario(@Param("usuarioId") int usuarioId);
+
     @Query("SELECT lugar FROM Lugar lugar WHERE lugar.moderador IS NOT NULL ORDER BY lugar.fechaAprobacion DESC")
     List<LugarRegistro> buscarLugarRegistros();
 
@@ -48,6 +51,7 @@ public interface LugarRepositorio extends JpaRepository<Lugar, Integer> {
 
     @Query("SELECT lugar FROM Lugar lugar WHERE lugar.nombre LIKE %:texto%")
     <T> List<T> buscarTodosPorNombre(@Param("texto") String texto, Class<T> typeClass);
+
 
 
 }

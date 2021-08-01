@@ -5,6 +5,9 @@ export default {
             title: 'Explorar',
             path: '/'
         }, {
+            title: 'Mis Favoritos',
+            path: '/mis-favoritos'
+        }, {
             title: 'Mis Lugares',
             path: '/mis-lugares'
         }, {

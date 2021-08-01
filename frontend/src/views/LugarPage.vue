@@ -17,9 +17,27 @@
                         </div>
                         <div class="lugar-page__header-extra">
                             <p>{{ info.lugar.fechaCreacion }}</p>
-                            <div class="lugar-page__header-options" v-if="info.lugar.estado === 'ESPERANDO' && isModerator">
-                                <AppButton type="success" @click="approve" inline>APROBAR</AppButton>
-                                <AppButton type="danger" @click="disapprove" inline>DESAPROBAR</AppButton>
+                            <div class="lugar-page__header-options">
+                                <AppButton @click="markFavorite" type="orange" inline>
+                                    <template v-if="info.favorito">
+                                        <i class="far fa-heart"></i> QUITAR FAVORITO
+                                    </template>
+                                    <template v-else>
+                                        <i class="fas fa-heart"></i> MARCAR FAVORITO
+                                    </template>
+                                </AppButton>
+                                <AppButton :type="isOpen ? 'orange' : 'danger'" inline>
+                                    <template v-if="isOpen">
+                                        <i class="fas fa-door-open"></i> ABIERTO
+                                    </template>
+                                    <template v-else>
+                                        <i class="fas fa-door-closed"></i> CERRADO
+                                    </template>
+                                </AppButton>
+                                <template v-if="info.lugar.estado === 'ESPERANDO' && isModerator">
+                                    <AppButton type="success" @click="approve" inline>APROBAR</AppButton>
+                                    <AppButton type="danger" @click="disapprove" inline>DESAPROBAR</AppButton>
+                                </template>
                             </div>
                         </div>
                     </div>
@@ -35,7 +53,63 @@
                             <UsuarioBlock :usuario="this.info.lugar.usuario" divider/>
                             <p>{{ this.info.lugar.descripcion }}</p>
                         </div>
-                        <div class="lugar-page__images"></div>
+                        <div class="lugar-page__images-contet">
+                            <div class="lugar-page__images">
+                                <template v-if="this.info.lugar.imagenes">
+                                    <transition name="fade" mode="out-in">
+                                        <div class="image" v-for="image in [currentImage]" :key="image">
+                                            <img v-if="info.lugar.imagenes[image] && info.lugar.imagenes[image].url" width="100%" height="100%" :src="info.lugar.imagenes[image].url" alt="">
+                                        </div>
+                                    </transition>
+                                </template>
+                            </div>
+                            <div class="lugar-pages__controls" v-if="this.info.lugar.imagenes">
+                                <AppButton v-if="currentImage - 1 >= 0" @click="() => changeImage(-1)" small>Anterior</AppButton>
+                                <AppButton v-if="currentImage + 1 < this.info.lugar.imagenes.length" @click="() => changeImage(+1)" small>Siguiente</AppButton>
+                            </div>
+                        </div>
+
+                    </AppMultipleLine>
+                    <AppMultipleLine columns="2">
+                        <div class="lugar-page__horarios">
+                            <FormSection>
+                                <template slot="title">Horarios</template>
+                                <div class="horarios" slot="content" v-if="info.lugar.horarios.length > 0">
+                                    <table>
+                                        <tr>
+                                            <th>Horario</th>
+                                            <th>Lunes</th>
+                                            <th>Martes</th>
+                                            <th>Miércoles</th>
+                                            <th>Jueves</th>
+                                            <th>Viernes</th>
+                                            <th>Sábado</th>
+                                            <th>Domingo</th>
+                                        </tr>
+                                        <tr v-for="horario in info.lugar.horarios" :key="horario.id">
+                                            <td>De {{ horario.inicioHoras }}:{{ horario.inicioMinutos }} a {{  horario.finalHoras }}:{{ horario.finalMinutos }}</td>
+                                            <td>{{ horario.lunes ? 'Abierto' : 'Cerrado' }}</td>
+                                            <td>{{ horario.martes ? 'Abierto' : 'Cerrado' }}</td>
+                                            <td>{{ horario.miercoles ? 'Abierto' : 'Cerrado' }}</td>
+                                            <td>{{ horario.jueves ? 'Abierto' : 'Cerrado' }}</td>
+                                            <td>{{ horario.viernes ? 'Abierto' : 'Cerrado' }}</td>
+                                            <td>{{ horario.sabado ? 'Abierto' : 'Cerrado' }}</td>
+                                            <td>{{ horario.domingo ? 'Abierto' : 'Cerrado' }}</td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </FormSection>
+                        </div>
+                        <div class="lugar-page__telefonos">
+                            <FormSection>
+                                <template slot="title">Telefonos</template>
+                                <div class="telefonos" slot="content" v-if="info.lugar.telefonos.length > 0">
+                                    <ul>
+                                        <li v-for="telefono in info.lugar.telefonos" :key="telefono.id">{{ telefono.numero }}</li>
+                                    </ul>
+                                </div>
+                            </FormSection>
+                        </div>
                     </AppMultipleLine>
                 </div>
             </div>
@@ -71,6 +145,53 @@
 </template>
 
 <style lang="scss" scoped>
+
+table {
+    width: 100%;
+    background: #eee;
+    border-radius: 0.5rem;
+}
+
+th {
+    padding: 1rem 0;
+}
+
+tr {
+    text-align: center;
+}
+
+td {
+    padding: 0.5rem;
+}
+
+.image,
+.image img {
+    width: 100%;
+    height: 100%;
+    border-radius: 1.5rem;
+}
+
+.lugar-page__images-contet {
+    position: relative;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+    transition: all 0.9s ease;
+    overflow: hidden;
+    visibility: visible;
+    position: absolute;
+    width:100%;
+    opacity: 1;
+}
+
+.fade-enter,
+.fade-leave-to {
+    visibility: hidden;
+    width:100%;
+    opacity: 0;
+}
+
 .stars {
     margin-top: 0.4rem;
     display: flex;
@@ -92,9 +213,11 @@
 }
 
 .lugar-page__images {
+    position: relative;
     background: #eee;
     border-radius: 0.7rem;
-    height: 20rem;
+    height: 25rem;
+    max-height: 25rem;
 }
 
 .lugar-page__header {
@@ -103,6 +226,15 @@
     top: 0;
     background: white;
     border-bottom: 1px solid #ddd;
+}
+
+.lugar-pages__controls {
+    position: absolute;
+    top: 0;
+    display: flex;
+    width: 100%;
+    gap: 0.5rem;
+    margin: 1rem;
 }
 
 .lugar-page__header .lugar-page__header-container {
@@ -145,6 +277,8 @@
 
 <script>
 
+const DAYS = ['domingo', 'lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado'];
+
 import AppButton from "../components/AppButton";
 import Mapbox from "../components/LugarMapbox";
 import AppMultipleLine from "../components/AppMultipleLine";
@@ -157,10 +291,13 @@ import AppError from "../components/AppError";
 import ValidationUtil from "../libs/ValidationUtil";
 
 import routes from '../routes/routes';
+import FormSection from "../components/form/FormSection";
 
 export default {
     name: "LugarPage",
-    components: {AppError, Comment, AppFormInput, AppTitle, AppAlert, UsuarioBlock, AppMultipleLine, Mapbox, AppButton},
+    components: {
+        FormSection,
+        AppError, Comment, AppFormInput, AppTitle, AppAlert, UsuarioBlock, AppMultipleLine, Mapbox, AppButton},
     data() {
         return {
             notification: null,
@@ -175,7 +312,9 @@ export default {
                 calificacion: 0,
                 texto: ''
             },
-            commentErrors: {}
+            commentErrors: {},
+            currentImage: 0,
+            isOpen: false
         }
     },
     computed: {
@@ -188,6 +327,9 @@ export default {
         }
     },
     methods: {
+        changeImage(position) {
+            this.currentImage += position;
+        },
         changeCalification(number) {
             this.comment.calificacion = number;
         },
@@ -207,6 +349,14 @@ export default {
             request.then(({ data }) => {
                 this.info.comentario = true;
                 this.info.lugar.comentarios.splice(0, 0, data);
+            });
+
+        },
+        markFavorite() {
+            const lugarId = this.$route.params.lugarId;
+            const request = this.info.favorito ? this.$axios.delete('lugares/' + lugarId + '/favorito') : this.$axios.post('lugares/' + lugarId + '/favorito');
+            request.then(() => {
+                this.info.favorito = !this.info.favorito;
             });
 
         },
@@ -265,6 +415,23 @@ export default {
 
             request.then(({ data }) => {
                 this.info = data;
+                if (this.info.lugar.horarios) {
+                    this.isOpen = false;
+                    const date = new Date();
+                    const hours = date.getHours();
+                    const minutes = date.getMinutes();
+                    const dayOfWeeken = DAYS[date.getDay()];
+                    for (let horario of this.info.lugar.horarios) {
+                        if (horario[dayOfWeeken]) {
+                            if (hours > horario.inicioHoras && hours <= horario.finalHoras) {
+                                if (minutes > horario.inicioMinutos && hours <= horario.finalMinutos) {
+                                    this.isOpen = true;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
             });
 
             request.catch(({ response }) => {

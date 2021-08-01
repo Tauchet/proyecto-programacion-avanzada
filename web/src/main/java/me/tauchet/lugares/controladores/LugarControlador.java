@@ -11,6 +11,7 @@ import me.tauchet.lugares.excepciones.ServicioExcepcion;
 import me.tauchet.lugares.peition.RespuestaPeticion;
 import me.tauchet.lugares.proyeccion.ComentarioBase;
 import me.tauchet.lugares.proyeccion.LugarBase;
+import me.tauchet.lugares.proyeccion.LugarCompleto;
 import me.tauchet.lugares.proyeccion.LugarConComentarios;
 import me.tauchet.lugares.servicios.LugarServicio;
 import org.springframework.http.HttpStatus;
@@ -40,9 +41,15 @@ public class LugarControlador {
         return new ResponseEntity<>(lugarServicio.buscarLugaresPorUsuario(usuarioId), HttpStatus.OK);
     }
 
+    @GetMapping("/mis-favoritos")
+    public ResponseEntity<List<LugarBase>> buscarFavoritosPorUsuario(@RequestAttribute int usuarioId) {
+        List<LugarBase> lugares = lugarServicio.buscarFavoritosPorUsuario(usuarioId);
+        return new ResponseEntity<>(lugares, HttpStatus.OK);
+    }
+
     @PostMapping("")
-    public ResponseEntity<Integer> crear(@RequestBody LugarBuilder peticion) throws ServicioExcepcion, ParametrosExcepcion {
-        peticion.setUsuarioId(1);
+    public ResponseEntity<Integer> crear(@RequestBody LugarBuilder peticion, @RequestAttribute int usuarioId) throws ServicioExcepcion, ParametrosExcepcion {
+        peticion.setUsuarioId(usuarioId);
         int lugarId = lugarServicio.registrarLugar(peticion);
         return new ResponseEntity<>(lugarId, HttpStatus.OK);
     }
@@ -80,9 +87,9 @@ public class LugarControlador {
     }
 
     @GetMapping("/{lugarId}")
-    public ResponseEntity<LugarSimpleUsuarioDTO<LugarConComentarios>> buscarLugar(@PathVariable("lugarId") int lugarId,
-                                                                                  @RequestAttribute int usuarioId) throws ServicioExcepcion, ControladaExcepcion {
-        LugarSimpleUsuarioDTO<LugarConComentarios> lugar = lugarServicio.buscarLugarSegunUsuario(lugarId, usuarioId, LugarConComentarios.class);
+    public ResponseEntity<LugarSimpleUsuarioDTO<LugarCompleto>> buscarLugar(@PathVariable("lugarId") int lugarId,
+                                                                            @RequestAttribute int usuarioId) throws ServicioExcepcion, ControladaExcepcion {
+        LugarSimpleUsuarioDTO<LugarCompleto> lugar = lugarServicio.buscarLugarSegunUsuario(lugarId, usuarioId, LugarCompleto.class);
         return new ResponseEntity<>(lugar, HttpStatus.OK);
     }
 

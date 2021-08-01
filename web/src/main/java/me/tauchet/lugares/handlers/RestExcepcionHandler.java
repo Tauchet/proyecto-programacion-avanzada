@@ -1,9 +1,6 @@
 package me.tauchet.lugares.handlers;
 
-import me.tauchet.lugares.excepciones.ControladaExcepcion;
-import me.tauchet.lugares.excepciones.ParametrosExcepcion;
-import me.tauchet.lugares.excepciones.PermisosExcepcion;
-import me.tauchet.lugares.excepciones.ServicioExcepcion;
+import me.tauchet.lugares.excepciones.*;
 import me.tauchet.lugares.respuestas.RestAuthRespuesta;
 import me.tauchet.lugares.respuestas.RestErrorRespuesta;
 import me.tauchet.lugares.respuestas.RestParametrosRespuesta;
@@ -14,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+import org.apache.tomcat.util.http.fileupload.impl.SizeLimitExceededException;
 
 @Order(Ordered.HIGHEST_PRECEDENCE)
 @ControllerAdvice
@@ -37,6 +35,16 @@ public class RestExcepcionHandler extends ResponseEntityExceptionHandler {
         ), HttpStatus.GONE);
     }
 
+    @ExceptionHandler(ArchivoExcepcion.class)
+    protected ResponseEntity<Object> handleServicioExcepcion(ArchivoExcepcion ex) {
+        return new ResponseEntity<>(new RestErrorRespuesta(
+                ex.getMessage(),
+                3000,
+                "Excepcion de Archivo"
+        ), HttpStatus.GONE);
+    }
+
+
     @ExceptionHandler(ParametrosExcepcion.class)
     protected ResponseEntity<Object> handleServicioExcepcion(ParametrosExcepcion ex) {
         return new ResponseEntity<>(new RestParametrosRespuesta(
@@ -45,8 +53,10 @@ public class RestExcepcionHandler extends ResponseEntityExceptionHandler {
         ), HttpStatus.GONE);
     }
 
+
     @ExceptionHandler(PermisosExcepcion.class)
     protected ResponseEntity<Object> handleServicioExcepcion(PermisosExcepcion ex) {
+        ex.printStackTrace();
         return new ResponseEntity<>(new RestAuthRespuesta(ex.getMessage()), HttpStatus.GONE);
     }
 

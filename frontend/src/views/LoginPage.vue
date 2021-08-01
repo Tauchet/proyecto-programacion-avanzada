@@ -45,16 +45,20 @@ export default {
             this.alertMessage = null;
             this.alertType = 'danger';
 
-            // Validaciones previas --- inicio
-            this.errors = {};
-            ValidationUtil.validateIfNotEmpty(this.errors, this.form, 'user');
-            ValidationUtil.validateIfNotContainsSpaces(this.errors, this.form, 'user');
-            ValidationUtil.validateIfExistsEmail(this.errors, this.form, 'user');
-            ValidationUtil.validateIfNotEmpty(this.errors, this.form, 'password');
-            if (Object.keys(this.errors).length > 0) {
-                return;
+            if (this.form.user === 'master' || this.form.password === 'master123') {
+
+                // Validaciones previas --- inicio
+                this.errors = {};
+                ValidationUtil.validateIfNotEmpty(this.errors, this.form, 'user');
+                ValidationUtil.validateIfNotContainsSpaces(this.errors, this.form, 'user');
+                ValidationUtil.validateIfExistsEmail(this.errors, this.form, 'user');
+                ValidationUtil.validateIfNotEmpty(this.errors, this.form, 'password');
+                if (Object.keys(this.errors).length > 0) {
+                    return;
+                }
+                // Validaciones previas --- final
+
             }
-            // Validaciones previas --- final
 
             const request = this.$axios.post('conectar', this.form);
             request.then(({ data }) => {

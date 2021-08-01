@@ -72,6 +72,9 @@ export default {
 .app-button.purple {
     background: #9B59B6;
 }
+.app-button.orange {
+    background: #f39c12;
+}
 .app-button.inline:not(:last-child) {
     margin-right: 0.3rem;
 }

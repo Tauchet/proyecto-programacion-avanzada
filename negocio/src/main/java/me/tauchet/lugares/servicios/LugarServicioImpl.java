@@ -16,6 +16,7 @@ import me.tauchet.lugares.utils.ValidacionUtil;
 import org.springframework.data.projection.ProjectionFactory;
 import org.springframework.stereotype.Service;
 
+import java.awt.*;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -29,6 +30,7 @@ public class LugarServicioImpl implements LugarServicio {
     private final CategoriaRepositorio categoriaRepositorio;
     private final UsuarioRepositorio usuarioRepositorio;
     private final HorarioRepositorio horarioRepositorio;
+    private final ImagenRepositorio imagenRepositorio;
     private final TelefonoRepositorio telefonoRepositorio;
     private final FavoritoRepositorio favoritoRepositorio;
     private final ComentarioRepositorio comentarioRepositorio;
@@ -48,11 +50,15 @@ public class LugarServicioImpl implements LugarServicio {
 
         ValidacionUtil.esNecesarioEnLista("telefonos", builder.getTelefonos(), 1, "telefono");
         ValidacionUtil.esNecesarioEnLista("horarios", builder.getHorarios(), 1, "horario");
+        ValidacionUtil.esNecesarioEnLista("imagenes", builder.getImagenes(), 1, "imagen");
+
         for (Horario horario: builder.getHorarios()) {
 
             if (horario == null) {
                 throw new ParametrosExcepcion("horarios", "¡No se pueden agregar horarios vacíos!");
-            } else if (!(horario.isLunes() || horario.isMartes() || horario.isMiercoles() || horario.isJueves() || horario.isViernes() || horario.isSabado() || horario.isDomingo())) {
+            } else if (!(horario.isLunes() || horario.isMartes() || horario.isMiercoles() || horario.isJueves() || horario.isViernes() ||
+                    horario.isSabado() ||
+                    horario.isDomingo())) {
                 throw new ParametrosExcepcion("horarios", "¡Hay un horario sin selección de dias!");
             } else if (horario.getInicioHoras() == horario.getFinalHoras() && horario.getInicioMinutos() == horario.getFinalMinutos()) {
                 throw new ParametrosExcepcion("horarios", "¡Hay un horario sin tiempos seleccionados!");
@@ -98,6 +104,14 @@ public class LugarServicioImpl implements LugarServicio {
         lugar.setEstado(LugarEstado.ESPERANDO);
         lugarRepositorio.save(lugar);
 
+        // Guardar imagenes
+        for (String imagenUrl: builder.getImagenes()) {
+            Imagen imagen = new Imagen();
+            imagen.setLugar(lugar);
+            imagen.setUrl(imagenUrl);
+            imagenRepositorio.save(imagen);
+        }
+
         // Guardar horarios
         for (Horario horario: builder.getHorarios()) {
             horario.setLugar(lugar);
@@ -140,6 +154,11 @@ public class LugarServicioImpl implements LugarServicio {
     @Override
     public List<MiLugarDTO> buscarLugaresPorUsuario(int usuarioId) {
         return lugarRepositorio.buscarLugaresPorUsuario(usuarioId);
+    }
+
+    @Override
+    public List<LugarBase> buscarFavoritosPorUsuario(int usuarioId) {
+        return lugarRepositorio.buscarFavoritosPorUsuario(usuarioId);
     }
 
     @Override
@@ -224,7 +243,7 @@ public class LugarServicioImpl implements LugarServicio {
             int lugarId,
             int usuarioId,
             Class<T> clase
-    ) throws ServicioExcepcion, ControladaExcepcion {
+    ) throws ControladaExcepcion {
 
         LugarSimpleUsuarioDTO<T> busqueda = null;
 

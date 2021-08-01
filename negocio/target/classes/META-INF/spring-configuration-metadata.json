@@ -1,0 +1,11 @@
+{
+  "groups": [
+    {
+      "name": "file",
+      "type": "me.tauchet.lugares.propiedades.ArchivosPropiedades",
+      "sourceType": "me.tauchet.lugares.propiedades.ArchivosPropiedades"
+    }
+  ],
+  "properties": [],
+  "hints": []
+}

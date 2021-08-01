@@ -35,6 +35,7 @@ public interface LugarServicio {
     void responderComentario(Integer usuarioId, Integer comentarioId, String respuesta) throws ServicioExcepcion, ParametrosExcepcion;
 
     List<LugarRegistro> buscarLugarRegistros(int usuarioId);
+    List<LugarBase> buscarFavoritosPorUsuario(int usuarioId);
 
 }
 

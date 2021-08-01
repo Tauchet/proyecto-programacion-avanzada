@@ -16,6 +16,7 @@ import AdministratorCategoriasPage from "../views/AdministratorCategoriasPage";
 import HomePage from "../views/HomePage";
 
 import realRoutes from '../routes/routes';
+import LugaresFavoritos from "../views/LugaresFavoritos";
 
 Vue.use(VueRouter);
 
@@ -23,6 +24,13 @@ const routes = [
     {
         path: '/mis-lugares',
         component: MyLugaresPage,
+        meta: {
+            requireUser: true
+        }
+    },
+    {
+        path: '/mis-favoritos',
+        component: LugaresFavoritos,
         meta: {
             requireUser: true
         }

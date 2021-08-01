@@ -27,6 +27,7 @@ public class GeneralControlador {
 
     @GetMapping("")
     public ResponseEntity<GeneralRespuesta> buscarTodas() {
+
         List<CiudadBase> ciudades = this.ciudadServicio.buscarTodas();
         List<CategoriaBase> categorias = this.categoriaServicio.buscarTodas();
         GeneralRespuesta respuesta = new GeneralRespuesta(ciudades, categorias);

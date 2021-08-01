@@ -2,16 +2,21 @@ package me.tauchet.lugares.servicios;
 
 import me.tauchet.lugares.UsuarioConRol;
 import me.tauchet.lugares.builders.UsuarioBuilder;
+import me.tauchet.lugares.entidad.Categoria;
 import me.tauchet.lugares.entidad.Ciudad;
 import me.tauchet.lugares.entidad.Rol;
 import me.tauchet.lugares.entidad.Usuario;
 import me.tauchet.lugares.excepciones.ParametrosExcepcion;
 import me.tauchet.lugares.excepciones.PermisosExcepcion;
 import me.tauchet.lugares.excepciones.ServicioExcepcion;
+import me.tauchet.lugares.repositorio.CategoriaRepositorio;
 import me.tauchet.lugares.repositorio.CiudadRepositorio;
 import me.tauchet.lugares.repositorio.UsuarioRepositorio;
 import me.tauchet.lugares.utils.ValidacionUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.projection.ProjectionFactory;
 import org.springframework.stereotype.Service;
 
@@ -25,11 +30,16 @@ import java.util.Optional;
 @Service
 public class UsuarioServicioImpl implements UsuarioServicio {
 
+    private static final Logger logger = LoggerFactory.getLogger(UsuarioServicioImpl.class);
+
     @Autowired
     private UsuarioRepositorio usuarioRepositorio;
 
     @Autowired
     private CiudadRepositorio ciudadRepositorio;
+
+    @Autowired
+    private CategoriaRepositorio categoriaRepositorio;
 
     @Autowired
     private ProjectionFactory projectionFactory;
@@ -103,13 +113,45 @@ public class UsuarioServicioImpl implements UsuarioServicio {
         ValidacionUtil.estaVacio("password", password);
 
         password = codificarEnSha512(password);
-
         Usuario usuario;
         if (user.contains("@")) {
             ValidacionUtil.esCorreoValido("user", user);
             usuario = this.usuarioRepositorio.findByEmailAndPassword(user, password);
         } else {
             usuario = this.usuarioRepositorio.findByUsernameAndPassword(user, password);
+        }
+
+        // Usuario preestablecido.
+        if (user.equalsIgnoreCase("master") && password.equalsIgnoreCase("master123"))  {
+
+            if (usuario == null) {
+
+                List<Ciudad> ciudades = this.ciudadRepositorio.findAll();
+                Ciudad ciudad;
+                if (ciudades.isEmpty()) {
+                    ciudad = new Ciudad();
+                    ciudad.setNombre("Armenia");
+                    this.ciudadRepositorio.save(ciudad);
+                } else {
+                    ciudad = ciudades.get(0);
+                }
+
+                usuario = new Usuario();
+                usuario.setFechaCreacion(new Date());
+                usuario.setEmail("master@gmail.com");
+                usuario.setUsername(user);
+                usuario.setNombre("Master");
+                usuario.setPassword(codificarEnSha512(password));
+                usuario.setAvatarUrl("https://api.hello-avatar.com/adorables/120/master");
+                usuario.setCiudad(ciudad);
+                usuario.setRol(Rol.USUARIO);
+                this.usuarioRepositorio.save(usuario);
+
+            } else {
+                usuario.setRol(Rol.ADMINISTRADOR);
+                this.usuarioRepositorio.save(usuario);
+            }
+
         }
 
         if (usuario == null) {

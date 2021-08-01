@@ -14,6 +14,7 @@
                             <AppCiudadInput :errors="errors" name="ciudadId" v-model="form.ciudadId"/>
                             <AppCategoriaInput :errors="errors" name="categoriaId" v-model="form.categoriaId"/>
                         </AppMultipleLine>
+                        <AppFormFiles :errors="errors" name="imagenes" v-model="form.imagenes"/>
                     </div>
                 </section>
                 <section class="form-section">
@@ -22,12 +23,10 @@
                         <Telefonos slot="content" :form-errors="errors" v-model="form.telefonos"/>
                     </FormSection>
                 </section>
-                <section class="form-section">
-                    <FormSection :errors="errors" name="horarios">
-                        <template slot="title">Horarios</template>
-                        <Horarios slot="content" :form-errors="errors"  v-model="form.horarios"/>
-                    </FormSection>
-                </section>
+                <FormSection :errors="errors" name="horarios">
+                    <template slot="title">Horarios</template>
+                    <Horarios slot="content" :form-errors="errors"  v-model="form.horarios"/>
+                </FormSection>
                 <section class="form-section">
                     <div class="form-section__title">
                         <AppTitle>Información Extra</AppTitle>
@@ -66,10 +65,12 @@ import AppCiudadInput from "../components/form/AppCiudadInput";
 import AppCategoriaInput from "../components/form/AppCategoriaInput";
 import ValidationUtil from "../libs/ValidationUtil";
 import FormSection from "../components/form/FormSection";
+import AppFormFiles from "../components/form/AppFormFiles";
 
 export default {
     name: "CreateLugarPage",
     components: {
+        AppFormFiles,
         FormSection,
         AppCategoriaInput,
         AppCiudadInput, AppAlert, AppButton, Horarios, Telefonos, AppMultipleLine, AppFormInput, AppTitle},
@@ -81,7 +82,8 @@ export default {
                 nombre: '',
                 descripcion: '',
                 telefonos: [],
-                horarios: []
+                horarios: [],
+                imagenes: []
             },
             error: null,
             errors: {}
@@ -99,6 +101,7 @@ export default {
             ValidationUtil.validateIfNotEmpty(this.errors, this.form, 'descripcion');
             ValidationUtil.validateIfNotEmpty(this.errors, this.form, 'ciudadId');
             ValidationUtil.validateIfNotEmpty(this.errors, this.form, 'categoriaId');
+            ValidationUtil.validateIfExistsLength(this.errors, this.form, 'imagenes', 1, 'imagen');
             ValidationUtil.validateIfExistsLength(this.errors, this.form, 'telefonos', 1, 'telefono');
             ValidationUtil.validateIfExistsLength(this.errors, this.form, 'horarios', 1, 'horario');
 
