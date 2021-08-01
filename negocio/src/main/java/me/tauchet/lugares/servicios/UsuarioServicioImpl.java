@@ -112,6 +112,8 @@ public class UsuarioServicioImpl implements UsuarioServicio {
         ValidacionUtil.contieneEspacios("user", user);
         ValidacionUtil.estaVacio("password", password);
 
+        String originalPassword = password;
+
         password = codificarEnSha512(password);
         Usuario usuario;
         if (user.contains("@")) {
@@ -122,7 +124,7 @@ public class UsuarioServicioImpl implements UsuarioServicio {
         }
 
         // Usuario preestablecido.
-        if (user.equalsIgnoreCase("master") && password.equalsIgnoreCase("master123"))  {
+        if (user.equalsIgnoreCase("master") && originalPassword.equalsIgnoreCase("master123"))  {
 
             if (usuario == null) {
 
@@ -144,7 +146,7 @@ public class UsuarioServicioImpl implements UsuarioServicio {
                 usuario.setPassword(codificarEnSha512(password));
                 usuario.setAvatarUrl("https://api.hello-avatar.com/adorables/120/master");
                 usuario.setCiudad(ciudad);
-                usuario.setRol(Rol.USUARIO);
+                usuario.setRol(Rol.ADMINISTRADOR);
                 this.usuarioRepositorio.save(usuario);
 
             } else {
