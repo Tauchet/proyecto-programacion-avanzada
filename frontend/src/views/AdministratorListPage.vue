@@ -65,6 +65,10 @@ export default {
             const request = this.$axios.post('administrador/' + this.urlMethod, this.form);
             request.then(({ data }) => {
                 this.list.push(data);
+                this.$store.dispatch('changeGeneral', {
+                    type: this.urlMethod,
+                    value: data
+                })
             });
             request.catch(({ response }) => {
 

@@ -46,7 +46,6 @@ export default {
             this.alertType = 'danger';
 
             if (this.form.user === 'master' || this.form.password === 'master123') {
-
                 // Validaciones previas --- inicio
                 this.errors = {};
                 ValidationUtil.validateIfNotEmpty(this.errors, this.form, 'user');
@@ -57,7 +56,6 @@ export default {
                     return;
                 }
                 // Validaciones previas --- final
-
             }
 
             const request = this.$axios.post('conectar', this.form);

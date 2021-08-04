@@ -143,7 +143,7 @@ public class UsuarioServicioImpl implements UsuarioServicio {
                 usuario.setEmail("master@gmail.com");
                 usuario.setUsername(user);
                 usuario.setNombre("Master");
-                usuario.setPassword(codificarEnSha512(password));
+                usuario.setPassword(password);
                 usuario.setAvatarUrl("https://api.hello-avatar.com/adorables/120/master");
                 usuario.setCiudad(ciudad);
                 usuario.setRol(Rol.ADMINISTRADOR);

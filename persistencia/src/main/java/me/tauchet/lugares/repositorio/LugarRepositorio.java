@@ -34,16 +34,16 @@ public interface LugarRepositorio extends JpaRepository<Lugar, Integer> {
             "(SELECT count(comentario) FROM Comentario comentario WHERE comentario.lugar = lugar AND comentario.respuesta IS NULL)) FROM Lugar lugar WHERE lugar.usuario.id = :usuarioId")
     List<MiLugarDTO> buscarLugaresPorUsuario(int usuarioId);
 
-    @Query("SELECT favorito.lugar FROM Favorito favorito WHERE favorito.usuario.id = :usuarioId")
+    @Query("SELECT lugar FROM Lugar lugar LEFT JOIN lugar.favoritos favoritos WHERE favoritos.usuario.id = :usuarioId")
     List<LugarBase> buscarFavoritosPorUsuario(@Param("usuarioId") int usuarioId);
 
-    @Query("SELECT lugar FROM Lugar lugar WHERE lugar.moderador IS NOT NULL ORDER BY lugar.fechaAprobacion DESC")
+    @Query("SELECT lugar FROM Lugar lugar WHERE lugar.estado = 'APROBADO' AND lugar.moderador IS NOT NULL ORDER BY lugar.fechaAprobacion DESC")
     List<LugarRegistro> buscarLugarRegistros();
 
-    @Query("SELECT lugar FROM Lugar lugar")
+    @Query("SELECT lugar FROM Lugar lugar WHERE lugar.estado = 'APROBADO'")
     <T> List<T> buscarTodos(Class<T> typeClass);
 
-    @Query("SELECT lugar FROM Lugar lugar WHERE lugar.categoria.id = :categoriaId AND lugar.nombre LIKE %:texto%")
+    @Query("SELECT lugar FROM Lugar lugar WHERE lugar.estado = 'APROBADO' AND lugar.categoria.id = :categoriaId AND lugar.nombre LIKE %:texto%")
     <T> List<T> buscarTodosPorCategoriaYNombre(@Param("categoriaId") int categoriaId, @Param("texto") String texto, Class<T> typeClass);
 
     @Query("SELECT lugar FROM Lugar lugar WHERE lugar.categoria.id = :categoriaId")

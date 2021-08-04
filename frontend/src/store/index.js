@@ -22,6 +22,9 @@ export default new Vuex.Store({
     loadGeneral(state, payload) {
       state.general = payload;
     },
+    changeGeneral(state, payload) {
+      state.general[payload.type].push(payload.data);
+    },
     signup(state, payload) {
       state.user = payload.token;
       state.userId = payload.usuarioId;
@@ -42,6 +45,9 @@ export default new Vuex.Store({
   actions: {
     loadGeneral(context, payload) {
       context.commit('loadGeneral', payload);
+    },
+    changeGeneral(context, payload) {
+      context.commit('changeGeneral', payload);
     },
     signup(context, payload) {
       context.commit('signup', payload);
