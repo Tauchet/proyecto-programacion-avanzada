@@ -5,30 +5,46 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="6239450d-ef56-4910-800a-e934be4679fc" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/jpa-buddy.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/codeStyles/codeStyleConfig.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/proyecto-programacion-avanzada.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/sqldialects.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/uiDesigner.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ProgramacionAvanzada.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/store/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/store/index.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/views/AdministratorListPage.vue" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/views/AdministratorListPage.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/views/LoginPage.vue" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/views/LoginPage.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/images/ea00b0b5-82cb-4dfa-8b1f-99c460e4495a" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/images/fea6a86c-fae4-4313-965b-8c5b36850065" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/negocio/src/main/java/me/tauchet/lugares/servicios/UsuarioServicioImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/negocio/src/main/java/me/tauchet/lugares/servicios/UsuarioServicioImpl.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/uiDesigner.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/persistencia/src/main/java/me/tauchet/lugares/proyeccion/LugarConFavoritos.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/src/main/java/me/tauchet/lugares/controladores/publico/LugarPublicoControlador.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/src/main/java/me/tauchet/lugares/respuestas/RestObjetoRespuesta.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/public/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/public/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/GeneralMapbox.vue" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/GeneralMapbox.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/LugarMapbox.vue" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/LugarMapbox.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/views/HomePage.vue" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/views/HomePage.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/views/LugarPage.vue" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/views/LugarPage.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/negocio/src/main/java/me/tauchet/lugares/servicios/LugarServicio.java" beforeDir="false" afterPath="$PROJECT_DIR$/negocio/src/main/java/me/tauchet/lugares/servicios/LugarServicio.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/negocio/src/main/java/me/tauchet/lugares/servicios/LugarServicioImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/negocio/src/main/java/me/tauchet/lugares/servicios/LugarServicioImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/negocio/src/main/java/me/tauchet/lugares/utils/ValidacionUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/negocio/src/main/java/me/tauchet/lugares/utils/ValidacionUtil.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/persistencia/src/main/java/me/tauchet/lugares/repositorio/LugarRepositorio.java" beforeDir="false" afterPath="$PROJECT_DIR$/persistencia/src/main/java/me/tauchet/lugares/repositorio/LugarRepositorio.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/resources/application.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/target/classes/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/web/target/classes/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/src/main/java/me/tauchet/lugares/controladores/LugarControlador.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/me/tauchet/lugares/controladores/LugarControlador.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/src/main/java/me/tauchet/lugares/controladores/UsuarioControlador.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/me/tauchet/lugares/controladores/UsuarioControlador.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/src/main/java/me/tauchet/lugares/controladores/administrador/AdministradorUsuarioControlador.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/me/tauchet/lugares/controladores/administrador/AdministradorUsuarioControlador.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/src/main/java/me/tauchet/lugares/controladores/moderador/ModeradorLugarControlador.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/me/tauchet/lugares/controladores/moderador/ModeradorLugarControlador.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/src/main/java/me/tauchet/lugares/handlers/RestExcepcionHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/me/tauchet/lugares/handlers/RestExcepcionHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/src/main/java/me/tauchet/lugares/handlers/RestPriorityExcepcionHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/me/tauchet/lugares/handlers/RestPriorityExcepcionHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/src/main/java/me/tauchet/lugares/peition/ActualizarRolPeticion.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/me/tauchet/lugares/peticion/ActualizarRolPeticion.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/src/main/java/me/tauchet/lugares/peition/ConectarPeticion.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/me/tauchet/lugares/peticion/ConectarPeticion.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/src/main/java/me/tauchet/lugares/peition/RespuestaPeticion.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/me/tauchet/lugares/peticion/RespuestaPeticion.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/src/main/java/me/tauchet/lugares/respuestas/RestAuthRespuesta.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/me/tauchet/lugares/respuestas/RestAuthRespuesta.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/src/main/java/me/tauchet/lugares/respuestas/RestErrorRespuesta.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/me/tauchet/lugares/respuestas/RestSimpleRespuesta.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/src/main/java/me/tauchet/lugares/respuestas/RestParametrosRespuesta.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/me/tauchet/lugares/respuestas/RestParametrosRespuesta.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -72,6 +88,16 @@
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../../Universidad/Java/proyecto-programacion-avanzada" />
+    <property name="nodejs_package_manager_path" value="npm" />
+    <property name="restartRequiresConfirmation" value="false" />
+    <property name="settings.editor.selected.configurable" value="preferences.updates" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="me.tauchet.lugares.respuestas" />
+      <recent name="me.tauchet.lugares.proyeccion" />
+    </key>
   </component>
   <component name="RunManager">
     <configuration default="true" type="JetRunConfigurationType">
@@ -115,7 +141,10 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1628093545414</updated>
-      <workItem from="1628093550809" duration="2782000" />
+      <workItem from="1628093550809" duration="3713000" />
+      <workItem from="1628098355082" duration="18000" />
+      <workItem from="1628195662445" duration="39000" />
+      <workItem from="1628195749593" duration="10086000" />
     </task>
     <servers />
   </component>
@@ -132,5 +161,10 @@
         </entry>
       </map>
     </option>
+    <option name="oldMeFiltersMigrated" value="true" />
+  </component>
+  <component name="XSLT-Support.FileAssociations.UIState">
+    <expand />
+    <select />
   </component>
 </project>

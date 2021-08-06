@@ -16,7 +16,6 @@ import me.tauchet.lugares.utils.ValidacionUtil;
 import org.springframework.data.projection.ProjectionFactory;
 import org.springframework.stereotype.Service;
 
-import java.awt.*;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -38,7 +37,7 @@ public class LugarServicioImpl implements LugarServicio {
     private final ProjectionFactory projectionFactory;
 
     @Override
-    public int registrarLugar(LugarBuilder builder) throws ServicioExcepcion, ParametrosExcepcion {
+    public LugarBase registrarLugar(LugarBuilder builder) throws ServicioExcepcion, ParametrosExcepcion {
 
         ValidacionUtil.estaVacio("nombre", builder.getNombre());
         ValidacionUtil.estaVacio("descripcion", builder.getDescripcion());
@@ -126,7 +125,7 @@ public class LugarServicioImpl implements LugarServicio {
             telefonoRepositorio.save(telefono);
         }
 
-        return lugar.getId();
+        return projectionFactory.createProjection(LugarBase.class, lugar);
     }
 
     @Override
@@ -139,6 +138,11 @@ public class LugarServicioImpl implements LugarServicio {
             return lugarRepositorio.buscarTodosPorNombre(texto, LugarBase.class);
         }
         return lugarRepositorio.buscarTodos(LugarBase.class);
+    }
+
+    @Override
+    public <T extends LugarBase> List<T> buscarTodos(Class<T> clase) {
+        return lugarRepositorio.buscarTodosCompletos(clase);
     }
 
     @Override
@@ -162,8 +166,21 @@ public class LugarServicioImpl implements LugarServicio {
     }
 
     @Override
-    public <T extends LugarBase> T buscarLugarPorId(int lugarId, Class<T> clase) {
-        return lugarRepositorio.buscarLugarPorId(lugarId, clase);
+    public <T extends LugarBase> T buscarLugarPorNombre(String nombre, Class<T> clase) throws ServicioExcepcion {
+        T lugar = lugarRepositorio.buscarLugarPorNombre(nombre, clase);
+        if (lugar == null) {
+            throw new ServicioExcepcion("¡No existe el lugar buscado!");
+        }
+        return lugar;
+    }
+
+    @Override
+    public <T extends LugarBase> T buscarLugarPorId(int lugarId, Class<T> clase) throws ServicioExcepcion {
+        T lugar = lugarRepositorio.buscarLugarPorId(lugarId, clase);
+        if (lugar == null) {
+            throw new ServicioExcepcion("¡No existe el lugar buscado!");
+        }
+        return lugar;
     }
 
     @Override
@@ -210,14 +227,19 @@ public class LugarServicioImpl implements LugarServicio {
         Favorito favorito = new Favorito();
 
         // Guardar Usuario
-        Usuario usuario = new Usuario();
-        usuario.setId(usuarioId);
-        favorito.setUsuario(usuario);
+        Optional<Usuario> validacionUsuario = usuarioRepositorio.findById(usuarioId);
+        if (validacionUsuario.isEmpty()) {
+            throw new ServicioExcepcion("¡El usuario no existe!");
+        }
 
         // Guardar Lugar
-        Lugar lugar = new Lugar();
-        lugar.setId(lugarId);
-        favorito.setLugar(lugar);
+        Optional<Lugar> validacionLugar = lugarRepositorio.findById(lugarId);
+        if (validacionLugar.isEmpty()) {
+            throw new ServicioExcepcion("¡El lugar no existe!");
+        }
+
+        favorito.setUsuario(validacionUsuario.get());
+        favorito.setLugar(validacionLugar.get());
 
         favoritoRepositorio.save(favorito);
 
@@ -243,7 +265,7 @@ public class LugarServicioImpl implements LugarServicio {
             int lugarId,
             int usuarioId,
             Class<T> clase
-    ) throws ControladaExcepcion {
+    ) throws ControladaExcepcion, ServicioExcepcion {
 
         LugarSimpleUsuarioDTO<T> busqueda = null;
 
@@ -348,6 +370,65 @@ public class LugarServicioImpl implements LugarServicio {
 
         resultado.setRespuesta(respuesta);
         comentarioRepositorio.save(resultado);
+
+    }
+
+    @Override
+    public void eliminarLugarPorId(int lugarId) throws ServicioExcepcion {
+
+        Optional<Lugar> lugar = lugarRepositorio.findById(lugarId);
+        if (lugar.isEmpty()) {
+            throw new ServicioExcepcion("¡No existe el lugar buscado!");
+        }
+
+        Lugar instancia = lugar.get();
+        if (!instancia.getFavoritos().isEmpty()) {
+            favoritoRepositorio.deleteAll(instancia.getFavoritos());
+        }
+
+        if (!instancia.getTelefonos().isEmpty()) {
+            telefonoRepositorio.deleteAll(instancia.getTelefonos());
+        }
+
+        if (!instancia.getHorarios().isEmpty()) {
+            horarioRepositorio.deleteAll(instancia.getHorarios());
+        }
+
+        if (!instancia.getComentarios().isEmpty()) {
+            comentarioRepositorio.deleteAll(instancia.getComentarios());
+        }
+
+        if (!instancia.getImagenes().isEmpty()) {
+            imagenRepositorio.deleteAll(instancia.getImagenes());
+        }
+
+        lugarRepositorio.delete(instancia);
+    }
+
+    @Override
+    public void actualizarLugar(Integer lugarId, Lugar lugarBuild) throws ParametrosExcepcion, ServicioExcepcion {
+
+        ValidacionUtil.estaVacio("lugarId", lugarId);
+
+        Optional<Lugar> lugar = lugarRepositorio.findById(lugarId);
+        if (lugar.isEmpty()) {
+            throw new ServicioExcepcion("¡No existe el lugar buscado!");
+        }
+
+        Lugar result = lugar.get();
+        if (lugarBuild.getNombre() != null) {
+            result.setNombre(lugarBuild.getNombre());
+        }
+
+        if (lugarBuild.getDescripcion() != null) {
+            result.setDescripcion(lugarBuild.getDescripcion());
+        }
+
+        if (lugarBuild.getEstado() != null) {
+            result.setEstado(lugarBuild.getEstado());
+        }
+
+        lugarRepositorio.save(result);
 
     }
 

@@ -1,4 +1,4 @@
-package me.tauchet.lugares.peition;
+package me.tauchet.lugares.peticion;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

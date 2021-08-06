@@ -10,6 +10,8 @@
 
 import mapboxgl from "mapbox-gl";
 import "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css";
+import "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css";
+import MapboxDirections from '@mapbox/mapbox-gl-directions/dist/mapbox-gl-directions';
 
 export default {
     name: "Mapbox",
@@ -42,6 +44,37 @@ export default {
             const marker = new mapboxgl.Marker({});
             marker.setLngLat(LOCATION);
             marker.addTo(map);
+
+            const $self = this;
+
+            map.on('load', function() {
+                if ("geolocation" in navigator) {
+                    navigator.geolocation.getCurrentPosition(position => {
+
+                        const positionInitial = [position.coords.longitude, position.coords.latitude];
+                        const directions = new MapboxDirections({
+                            accessToken: mapboxgl.accessToken,
+                            unit: 'metric',
+                            interactive: false
+                        });
+
+                        directions.setOrigin(positionInitial);
+                        directions.setDestination([$self.lugar.longitud, $self.lugar.latitud]);
+
+                        map.addControl(
+                            directions,
+                            'top-left'
+                        );
+
+                        map.flyTo({
+                            center: positionInitial,
+                            esential: true,
+                            zoom: 14
+                        });
+
+                    });
+                }
+            });
 
         }
     },

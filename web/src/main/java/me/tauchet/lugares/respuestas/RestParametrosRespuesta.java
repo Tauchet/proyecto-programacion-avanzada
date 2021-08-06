@@ -3,7 +3,7 @@ package me.tauchet.lugares.respuestas;
 import lombok.Getter;
 
 @Getter
-public class RestParametrosRespuesta extends RestErrorRespuesta {
+public class RestParametrosRespuesta extends RestSimpleRespuesta {
 
     private final String field;
 

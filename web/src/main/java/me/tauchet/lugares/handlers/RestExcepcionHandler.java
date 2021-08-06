@@ -2,7 +2,7 @@ package me.tauchet.lugares.handlers;
 
 import me.tauchet.lugares.excepciones.*;
 import me.tauchet.lugares.respuestas.RestAuthRespuesta;
-import me.tauchet.lugares.respuestas.RestErrorRespuesta;
+import me.tauchet.lugares.respuestas.RestSimpleRespuesta;
 import me.tauchet.lugares.respuestas.RestParametrosRespuesta;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -11,7 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
-import org.apache.tomcat.util.http.fileupload.impl.SizeLimitExceededException;
 
 @Order(Ordered.HIGHEST_PRECEDENCE)
 @ControllerAdvice
@@ -19,7 +18,7 @@ public class RestExcepcionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(ServicioExcepcion.class)
     protected ResponseEntity<Object> handleServicioExcepcion(ServicioExcepcion ex) {
-        return new ResponseEntity<>(new RestErrorRespuesta(
+        return new ResponseEntity<>(new RestSimpleRespuesta(
                 ex.getMessage(),
                 2000,
                 "Excepcion de Servicio"
@@ -28,7 +27,7 @@ public class RestExcepcionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(ControladaExcepcion.class)
     protected ResponseEntity<Object> handleServicioExcepcion(ControladaExcepcion ex) {
-        return new ResponseEntity<>(new RestErrorRespuesta(
+        return new ResponseEntity<>(new RestSimpleRespuesta(
                 ex.getMessage(),
                 1000,
                 "Excepcion Controlada"
@@ -37,7 +36,7 @@ public class RestExcepcionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(ArchivoExcepcion.class)
     protected ResponseEntity<Object> handleServicioExcepcion(ArchivoExcepcion ex) {
-        return new ResponseEntity<>(new RestErrorRespuesta(
+        return new ResponseEntity<>(new RestSimpleRespuesta(
                 ex.getMessage(),
                 3000,
                 "Excepcion de Archivo"

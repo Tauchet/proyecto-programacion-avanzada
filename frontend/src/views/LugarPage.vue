@@ -18,14 +18,19 @@
                         <div class="lugar-page__header-extra">
                             <p>{{ info.lugar.fechaCreacion }}</p>
                             <div class="lugar-page__header-options">
-                                <AppButton @click="markFavorite" type="orange" inline>
-                                    <template v-if="info.favorito">
-                                        <i class="far fa-heart"></i> QUITAR FAVORITO
-                                    </template>
-                                    <template v-else>
-                                        <i class="fas fa-heart"></i> MARCAR FAVORITO
-                                    </template>
-                                </AppButton>
+                                <template v-if="info.lugar.estado === 'APROBADO'">
+                                    <AppButton @click="markFavorite" type="orange" inline>
+                                        <template v-if="info.favorito">
+                                            <i class="far fa-heart"></i> QUITAR FAVORITO
+                                        </template>
+                                        <template v-else>
+                                            <i class="fas fa-heart"></i> MARCAR FAVORITO
+                                        </template>
+                                    </AppButton>
+                                    <AppButton @click="goRouteExplorer" type="purple" inline>
+                                        <i class="fas fa-map-marker-alt"></i> RUTA EXPLORADORA
+                                    </AppButton>
+                                </template>
                                 <AppButton :type="isOpen ? 'orange' : 'danger'" inline>
                                     <template v-if="isOpen">
                                         <i class="fas fa-door-open"></i> ABIERTO
@@ -360,6 +365,16 @@ export default {
             });
 
         },
+        goRouteExplorer() {
+            this.$router.push({
+                path: '/',
+                query: {
+                    lugar_ruta: true,
+                    lng: this.info.lugar.longitud,
+                    lat: this.info.lugar.latitud
+                }
+            });
+        },
         approve() {
 
             const lugarId = this.$route.params.lugarId;
@@ -435,7 +450,6 @@ export default {
             });
 
             request.catch(({ response }) => {
-                console.log(response.data.status);
                 if (response && response.data && response.data.status === 1000) {
                     this.notification = response.data.message;
                 }

@@ -1,6 +1,17 @@
 <template>
     <div id="home-page">
-        <GeneralMapbox ref="map" />
+        <div class="home-page__kms">
+            <div class="tags">
+                <button class="tag" @click="() => moveDistance(-1)" :class="{active: distanceKM === -1}">TODA</button>
+                <button class="tag" @click="() => moveDistance(1)" :class="{active: distanceKM === 1}">1 Km</button>
+                <button class="tag" @click="() => moveDistance(2)" :class="{active: distanceKM === 2}">2 Km</button>
+                <button class="tag" @click="() => moveDistance(4)" :class="{active: distanceKM === 4}">4 Km</button>
+                <button class="tag" @click="() => moveDistance(6)" :class="{active: distanceKM === 6}">6 Km</button>
+                <button class="tag" @click="() => moveDistance(8)" :class="{active: distanceKM === 8}">8 Km</button>
+                <button class="tag" @click="() => moveDistance(10)" :class="{active: distanceKM === 10}">10 Km</button>
+            </div>
+        </div>
+        <GeneralMapbox @map-load="filterInDistance" ref="map" />
         <div class="home-page__container" id="lugares">
             <div class="container">
                 <div class="title-general">
@@ -31,6 +42,7 @@
                                 <div class="lugar-options">
                                     <AppButton inline small @click="() => viewInMap(lugar)">Ver en el Mapa</AppButton>
                                     <AppButton @click="() => openInformation(lugar)" type="purple" inline small>Más Información</AppButton>
+                                    <AppButton v-if="isGeoLocation" @click="() => locationMap(lugar)" type="success" inline small>Ver Ruta</AppButton>
                                 </div>
                             </div>
                         </div>
@@ -48,6 +60,8 @@ import AppButton from "../components/AppButton";
 import GeneralMapbox from "../components/GeneralMapbox";
 import AppFormInput from "../components/form/AppFormInput";
 import mapboxgl from "mapbox-gl";
+import { distance } from '@turf/turf';
+
 export default {
     name: 'HomePage',
     components: {AppFormInput, GeneralMapbox, AppButton},
@@ -56,14 +70,86 @@ export default {
             list: [],
             categoria: -1,
             form: '',
-            markers: {}
+            markers: {},
+            distanceKM: -1
+        }
+    },
+    beforeRouteUpdate(to, from, next) {
+        next(vm => {
+            vm.checkedQuery();
+        });
+    },
+    computed: {
+        categorias() {
+            return this.$store.getters.categorias;
+        },
+        isGeoLocation() {
+            return this.$refs.map && this.$refs.map.positionInitial != null;
         }
     },
     methods: {
+        moveDistance(dist) {
+            if (this.distanceKM !== dist) {
+                this.distanceKM = dist;
+                this.load();
+            }
+        },
+        filterInDistance() {
+
+            if (this.$refs.map.positionInitial && this.distanceKM > 0) {
+                const array = [];
+                for (const index in this.list) {
+                    const lugar = this.list[index];
+                    const to = this.$refs.map.positionInitial;
+                    const from = [lugar.longitud, lugar.latitud];
+                    const distanceKM = distance(to, from, {units: 'kilometers'});
+                    if (distanceKM > this.distanceKM) {
+                        const marker = this.markers[lugar.id];
+                        marker.remove();
+                        delete this.markers[lugar.id];
+                    } else {
+                        array.push(lugar);
+                    }
+                }
+                this.list = array;
+            }
+        },
+        locationMap(lugar, longitud = null, latitud = null) {
+
+            if (longitud == null && lugar != null) {
+                longitud = lugar.longitud;
+            }
+
+            if (latitud == null && lugar != null) {
+                latitud = lugar.latitud;
+            }
+
+            window.scrollTo(0,0);
+            const middle = this.$refs.map.travel(longitud, latitud);
+            this.$refs.map.handle.flyTo({
+                zoom: 15,
+                center: middle,
+                essential: true
+            });
+
+        },
+        checkedQuery() {
+            if (this.$route &&
+                this.$route.query &&
+                this.$route.query.lugar_ruta &&
+                this.$route.query.lat &&
+                this.$route.query.lng) {
+                const longitude = parseFloat(this.$route.query.lng);
+                const latitude = parseFloat(this.$route.query.lat);
+                setTimeout(() => {
+                    this.locationMap(null, longitude, latitude);
+                }, 2000);
+            }
+        },
         openInformation(lugar) {
             this.$router.push('lugares/' + lugar.id);
         },
-        async load() {
+        async load(first = false) {
 
             const params = {};
             if (this.categoria !== -1) {
@@ -85,6 +171,8 @@ export default {
 
             for (let lugar of data) {
 
+
+
                 const marker = new mapboxgl.Marker({});
                 marker.setPopup(new mapboxgl.Popup().setHTML("" +
                     "<div class='lugar-popup'>" +
@@ -101,10 +189,15 @@ export default {
 
                 this.markers[lugar.id] = marker;
 
-
-
             }
 
+            // Creamos un delay
+            this.filterInDistance();
+
+            if (first) {
+                this.checkedQuery();
+
+            }
 
         },
         moveCategoria(categoria) {
@@ -124,18 +217,21 @@ export default {
             }
         }
     },
-    computed: {
-        categorias() {
-            return this.$store.getters.categorias;
-        }
-    },
     created() {
-        this.load();
+        this.load(true);
     }
 }
 </script>
 
 <style scoped>
+
+.home-page__kms {
+    padding: 1rem;
+}
+
+.home-page__kms .tags {
+    margin: 0;
+}
 
 .search {
     margin-bottom: 2rem;

@@ -18,6 +18,9 @@ import java.util.List;
 @Repository
 public interface LugarRepositorio extends JpaRepository<Lugar, Integer> {
 
+    @Query("SELECT lugar FROM Lugar lugar WHERE lugar.nombre = :nombre")
+    <T> T buscarLugarPorNombre(@Param("nombre") String nombre, Class<T> typeClass);
+
     @Query("SELECT lugar FROM Lugar lugar WHERE lugar.id = :lugarId")
     <T> T buscarLugarPorId(@Param("lugarId") int lugarId, Class<T> typeClass);
 
@@ -42,6 +45,9 @@ public interface LugarRepositorio extends JpaRepository<Lugar, Integer> {
 
     @Query("SELECT lugar FROM Lugar lugar WHERE lugar.estado = 'APROBADO'")
     <T> List<T> buscarTodos(Class<T> typeClass);
+
+    @Query("SELECT lugar FROM Lugar lugar")
+    <T extends LugarBase> List<T> buscarTodosCompletos(Class<T> typeClass);
 
     @Query("SELECT lugar FROM Lugar lugar WHERE lugar.estado = 'APROBADO' AND lugar.categoria.id = :categoriaId AND lugar.nombre LIKE %:texto%")
     <T> List<T> buscarTodosPorCategoriaYNombre(@Param("categoriaId") int categoriaId, @Param("texto") String texto, Class<T> typeClass);

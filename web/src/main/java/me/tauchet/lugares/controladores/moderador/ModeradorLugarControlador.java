@@ -26,7 +26,7 @@ public class ModeradorLugarControlador {
     private LugarServicio lugarServicio;
 
     @GetMapping("/{lugarId}")
-    public ResponseEntity<LugarBase> buscar(@PathVariable("lugarId") int lugarId, @RequestAttribute int usuarioId) throws PermisosExcepcion {
+    public ResponseEntity<LugarBase> buscar(@PathVariable("lugarId") int lugarId, @RequestAttribute int usuarioId) throws PermisosExcepcion, ServicioExcepcion {
         usuarioServicio.tienePermisos(usuarioId, Rol.MODERADOR);
         LugarBase lugarBase = lugarServicio.buscarLugarPorId(lugarId, LugarBase.class);
         return new ResponseEntity<>(lugarBase, HttpStatus.OK);

@@ -44,7 +44,7 @@ public class ValidacionUtil {
     }
 
     public static void esNecesarioEnLista(String campo, List<?> object, int minimo, String titulo) throws ParametrosExcepcion {
-        if (object.size() < minimo) {
+        if (object == null || object.size() < minimo) {
             throw new ParametrosExcepcion(campo, "¡Se debe ingresar al menos " + minimo + " " + titulo + "!");
         }
     }

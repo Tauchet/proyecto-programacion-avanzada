@@ -4,25 +4,26 @@ import me.tauchet.lugares.builders.ComentarioBuilder;
 import me.tauchet.lugares.builders.LugarBuilder;
 import me.tauchet.lugares.dto.LugarSimpleUsuarioDTO;
 import me.tauchet.lugares.dto.MiLugarDTO;
+import me.tauchet.lugares.entidad.Lugar;
 import me.tauchet.lugares.excepciones.ControladaExcepcion;
 import me.tauchet.lugares.excepciones.ParametrosExcepcion;
 import me.tauchet.lugares.excepciones.ServicioExcepcion;
-import me.tauchet.lugares.proyeccion.ComentarioBase;
-import me.tauchet.lugares.proyeccion.LugarBase;
-import me.tauchet.lugares.proyeccion.LugarConUsuario;
-import me.tauchet.lugares.proyeccion.LugarRegistro;
+import me.tauchet.lugares.proyeccion.*;
 
 import java.util.List;
 
 public interface LugarServicio {
 
-    int registrarLugar(LugarBuilder peticion) throws ServicioExcepcion, ParametrosExcepcion;
+    LugarBase registrarLugar(LugarBuilder peticion) throws ServicioExcepcion, ParametrosExcepcion;
 
     List<LugarBase> buscarTodos(int categoriaId, String texto);
+    <T extends LugarBase> List<T> buscarTodos(Class<T> clase);
 
     List<LugarConUsuario> buscarLugaresEsperandoORechazados(int usuarioId);
     List<MiLugarDTO> buscarLugaresPorUsuario(int usuarioId);
-    <T extends LugarBase> T buscarLugarPorId(int lugarId, Class<T> clase);
+
+    <T extends LugarBase> T buscarLugarPorNombre(String nombre, Class<T> clase) throws ServicioExcepcion;
+    <T extends LugarBase> T buscarLugarPorId(int lugarId, Class<T> clase) throws ServicioExcepcion;
 
     void confirmarLugar(Integer lugarId, Integer usuarioId, Boolean aprobado) throws ServicioExcepcion, ParametrosExcepcion;
 
@@ -36,6 +37,11 @@ public interface LugarServicio {
 
     List<LugarRegistro> buscarLugarRegistros(int usuarioId);
     List<LugarBase> buscarFavoritosPorUsuario(int usuarioId);
+
+    void eliminarLugarPorId(int lugarId) throws ServicioExcepcion;
+
+    void actualizarLugar(Integer lugarId, Lugar lugar) throws ParametrosExcepcion, ServicioExcepcion;
+
 
 }
 

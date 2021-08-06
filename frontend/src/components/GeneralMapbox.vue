@@ -8,16 +8,35 @@
 
 import mapboxgl from "mapbox-gl";
 import "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css";
+import MapboxDirections from '@mapbox/mapbox-gl-directions/dist/mapbox-gl-directions';
 
 export default {
     name: "GeneralMapbox",
     props: {},
+    data() {
+        return {
+            positionInitial: null,
+            map: null,
+            controlDirections: null
+        }
+    },
     methods: {
+        travel(longitud, latitud) {
+
+            this.controlDirections.setOrigin(this.positionInitial);
+            this.controlDirections.setDestination([longitud, latitud]);
+
+            const x = (longitud - this.positionInitial[0]) / 2;
+            const y = (latitud - this.positionInitial[1]) / 2;
+
+            return [this.positionInitial[0] + x, this.positionInitial[1] + y];
+
+        },
         async createMap() {
 
             mapboxgl.accessToken = "pk.eyJ1IjoidGF1Y2hldCIsImEiOiJja3Jtd3h0d2M2MGdwMnBwZGRyNGFlaWptIn0.vFy_VTRRTWpDT5tvMwb6Ng";
 
-            const map  = new mapboxgl.Map({
+            const map = this.map  = new mapboxgl.Map({
                 container: "map",
                 style: "mapbox://styles/mapbox/streets-v11",
                 center: [-75.27986747330804,4.966951000736728],
@@ -35,14 +54,35 @@ export default {
 
             this.handle = map;
 
+            const $self = this;
+
             map.on('load', function() {
                 if ("geolocation" in navigator) {
                     navigator.geolocation.getCurrentPosition(position => {
+
+                        const positionInitial = $self.positionInitial = [position.coords.longitude, position.coords.latitude];
+
+                        const directions = $self.controlDirections = new MapboxDirections({
+                            accessToken: mapboxgl.accessToken,
+                            unit: 'metric',
+                            interactive: false
+                        });
+
+                        directions.setOrigin(positionInitial);
+
+                        map.addControl(
+                            directions,
+                            'top-left'
+                        );
+
                         map.flyTo({
-                            center: [position.coords.longitude, position.coords.latitude],
+                            center: positionInitial,
                             esential: true,
                             zoom: 14
                         });
+
+                        $self.$emit('map-load', map);
+
                     });
                 }
             });

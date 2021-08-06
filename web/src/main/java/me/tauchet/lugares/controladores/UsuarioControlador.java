@@ -2,7 +2,7 @@ package me.tauchet.lugares.controladores;
 
 import me.tauchet.lugares.builders.UsuarioBuilder;
 import me.tauchet.lugares.entidad.Usuario;
-import me.tauchet.lugares.peition.ConectarPeticion;
+import me.tauchet.lugares.peticion.ConectarPeticion;
 import me.tauchet.lugares.respuestas.TokenRespuesta;
 import me.tauchet.lugares.servicios.UsuarioServicio;
 import me.tauchet.lugares.util.JwtTokenUtil;

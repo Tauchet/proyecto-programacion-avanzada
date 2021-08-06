@@ -3,16 +3,14 @@ package me.tauchet.lugares.controladores;
 import me.tauchet.lugares.builders.ComentarioBuilder;
 import me.tauchet.lugares.dto.LugarSimpleUsuarioDTO;
 import me.tauchet.lugares.dto.MiLugarDTO;
-import me.tauchet.lugares.entidad.Lugar;
 import me.tauchet.lugares.builders.LugarBuilder;
 import me.tauchet.lugares.excepciones.ControladaExcepcion;
 import me.tauchet.lugares.excepciones.ParametrosExcepcion;
 import me.tauchet.lugares.excepciones.ServicioExcepcion;
-import me.tauchet.lugares.peition.RespuestaPeticion;
+import me.tauchet.lugares.peticion.RespuestaPeticion;
 import me.tauchet.lugares.proyeccion.ComentarioBase;
 import me.tauchet.lugares.proyeccion.LugarBase;
 import me.tauchet.lugares.proyeccion.LugarCompleto;
-import me.tauchet.lugares.proyeccion.LugarConComentarios;
 import me.tauchet.lugares.servicios.LugarServicio;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -50,7 +48,7 @@ public class LugarControlador {
     @PostMapping("")
     public ResponseEntity<Integer> crear(@RequestBody LugarBuilder peticion, @RequestAttribute int usuarioId) throws ServicioExcepcion, ParametrosExcepcion {
         peticion.setUsuarioId(usuarioId);
-        int lugarId = lugarServicio.registrarLugar(peticion);
+        int lugarId = lugarServicio.registrarLugar(peticion).getId();
         return new ResponseEntity<>(lugarId, HttpStatus.OK);
     }
 
