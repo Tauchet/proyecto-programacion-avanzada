@@ -10,8 +10,12 @@
                 <button class="tag" @click="() => moveDistance(8)" :class="{active: distanceKM === 8}">8 Km</button>
                 <button class="tag" @click="() => moveDistance(10)" :class="{active: distanceKM === 10}">10 Km</button>
             </div>
+            <div class="info" v-if="geoRoute">
+                <p>Minutos: {{ geoRoute.minutes }}</p>
+                <p>Distancia: {{ geoRoute.km }} KM</p>
+            </div>
         </div>
-        <GeneralMapbox @map-load="filterInDistance" ref="map" />
+        <GeneralMapbox @map-route="(data) => this.geoRoute = data" @map-load="filterInDistance" ref="map" />
         <div class="home-page__container" id="lugares">
             <div class="container">
                 <div class="title-general">
@@ -71,7 +75,8 @@ export default {
             categoria: -1,
             form: '',
             markers: {},
-            distanceKM: -1
+            distanceKM: -1,
+            geoRoute: null
         }
     },
     beforeRouteUpdate(to, from, next) {
@@ -227,10 +232,13 @@ export default {
 
 .home-page__kms {
     padding: 1rem;
+    display: flex;
+    align-items: center;
 }
 
 .home-page__kms .tags {
     margin: 0;
+    flex: 1;
 }
 
 .search {

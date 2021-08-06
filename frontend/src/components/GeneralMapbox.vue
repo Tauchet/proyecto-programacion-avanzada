@@ -70,6 +70,18 @@ export default {
 
                         directions.setOrigin(positionInitial);
 
+                        directions.on('route', e => {
+                            if (e.route && e.route.length > 0) {
+                                const route = e.route[0];
+                                $self.$emit('map-route', {
+                                    minutes: (route.duration / 60).toFixed(),
+                                    km: (route.distance / 1000).toFixed(1)
+                                });
+                            } else {
+                                $self.$emit('map-route', undefined);
+                            }
+                        })
+
                         map.addControl(
                             directions,
                             'top-left'
